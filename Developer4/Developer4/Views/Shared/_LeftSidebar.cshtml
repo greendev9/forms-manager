@@ -1,0 +1,309 @@
+﻿@using SharedAssemblies.Content.AppCode;
+@{
+    var avatarFile = "no-avatar.jpg";
+    var userFirstName = "John";
+    var userLastName = "Doe";
+}
+<!-- ========== Left Sidebar Start ========== -->
+<div class="left-side-menu">
+    <!-- LOGO -->
+
+    <div class="h-100" data-simplebar>
+        <!-- User box -->
+        <div class="user-box text-center">
+            <img src="~/assets/images/users/@avatarFile" alt="user-img" title="@String.Concat(userFirstName, " ", userLastName)"
+                 class="rounded-circle avatar-md">
+            <div class="dropdown">
+                <a href="javascript: void(0);" class="text-dark dropdown-toggle h5 mt-2 mb-1 d-block"
+                   data-toggle="dropdown">@String.Concat(userFirstName, " ", userLastName)</a>
+                <div class="dropdown-menu user-pro-dropdown">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item notify-item">
+                        <i class="fe-user mr-1"></i>
+                        <span>My Account</span>
+                    </a>
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item notify-item">
+                        <i class="fe-settings mr-1"></i>
+                        <span>Settings</span>
+                    </a>
+                    <!-- item-->
+                    <!-- <a href="javascript:void(0);" class="dropdown-item notify-item">
+                        <i class="fe-lock mr-1"></i>
+                        <span>Lock Screen</span>
+                    </a> -->
+                    <!-- item-->
+                    <a href="#" class="dropdown-item notify-item">
+                        <i class="fe-log-out mr-1"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+            <p class="text-muted">Admin</p>
+        </div>
+        <!--- Sidemenu -->
+        <div id="sidebar-menu">
+            <ul id="side-menu">
+                <li class="menu-title">Home</li>
+                <li>
+                    <a href="~/Home">
+                        <i class="fe-airplay"></i>
+                        <!--<span class="badge badge-danger float-right">3</span>-->
+                        <span> Dashboard </span>
+                    </a>
+                </li>
+
+                <li class="menu-title mt-2">Service Administration</li>
+                <li>
+                    <a href="#sidebarServiceAdminApps" data-toggle="collapse">
+                        <i class="fe-briefcase"></i>
+                        <span> Application Setup </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarServiceAdminApps">
+                        <ul class="nav-second-level">
+                            <li><a href="javascript:;">Services</a></li>
+                            <li><a href="javascript:;">Form Sections</a></li>
+                            <li><a href="javascript:;">Form Sub Sections</a></li>
+                            <li><a href="javascript:;">Forms</a></li>
+                            <li><a href="javascript:;">Form Questions</a></li>
+                            <li><a href="javascript:;">Form Builder</a></li>
+                            <li><a href="~/ApplicationSetup/FormQuestionsUpload">Question Upload Utility</a></li>
+                            <li><a href="~/ApplicationSetup/ChoiceListManager">Choice List Manager</a></li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="menu-title mt-2">User Administration</li>
+                <li>
+                    <a href="javascript:;">
+                        <i class="fe-airplay"></i>
+                        <!--<span class="badge badge-danger float-right">3</span>-->
+                        <span> Service Users </span>
+                    </a>
+
+                    <a href="javascript:;">
+                        <i class="fe-airplay"></i>
+                        <!--<span class="badge badge-danger float-right">3</span>-->
+                        <span> Admin Users </span>
+                    </a>
+                </li>
+
+                <li class="menu-title mt-2">Files</li>
+                <li>
+                    <a href="#sidebarFiles" data-toggle="collapse">
+                        <i class="fe-briefcase"></i>
+                        <span> Uploads </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarFiles">
+                        <ul class="nav-second-level">
+                            <li><a href="javascript:;">PDF Templates</a></li>
+                            <li><a href="javascript:;">Document Administration</a></li>
+                            <li><a href="javascript:;">PDF Image Files</a></li>
+                        </ul>
+                    </div>
+                </li>
+
+                <!--
+                <li>
+                    <a href="widgets.html">
+                        <i class="fe-command"></i>
+                        <span>  Widgets  </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#sidebarCharts" data-toggle="collapse">
+                        <i class="fe-bar-chart-2"></i>
+                        <span>  Charts  </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarCharts">
+                        <ul class="nav-second-level">
+                            <li><a href="charts-flot.html">Flot</a></li>
+                            <li><a href="charts-morris.html">Morris</a></li>
+                            <li><a href="charts-chartist.html">Chartist</a></li>
+                            <li><a href="charts-chartjs.html">Chartjs</a></li>
+                            <li><a href="charts-sparkline.html">Sparkline</a></li>
+                            <li><a href="charts-knob.html">Jquery Knob</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="#sidebarForms" data-toggle="collapse">
+                        <i class="fe-disc"></i>
+                        <span class="badge badge-info float-right">10</span>
+                        <span> Forms </span>
+                    </a>
+                    <div class="collapse" id="sidebarForms">
+                        <ul class="nav-second-level">
+                            <li><a href="forms-elements.html">Form Elements</a></li>
+                            <li><a href="forms-advanced.html">Form Advanced</a></li>
+                            <li><a href="forms-validation.html">Form Validation</a></li>
+                            <li><a href="forms-pickers.html">Form Pickers</a></li>
+                            <li><a href="forms-wizard.html">Form Wizard</a></li>
+                            <li><a href="forms-mask.html">Form Masks</a></li>
+                            <li><a href="forms-summernote.html">Summernote</a></li>
+                            <li><a href="forms-quilljs.html">Quilljs Editor</a></li>
+                            <li><a href="forms-x-editable.html">X Editable</a></li>
+                            <li><a href="forms-file-uploads.html">File Upload</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="#sidebarIcons" data-toggle="collapse">
+                        <i class="fe-box"></i>
+                        <span>  Icons  </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarIcons">
+                        <ul class="nav-second-level">
+                            <li><a href="icons-materialdesign.html">Material Design</a></li>
+                            <li><a href="icons-dripicons.html">Dripicons</a></li>
+                            <li><a href="icons-fontawesome.html">Font Awesome</a></li>
+                            <li><a href="icons-feather.html">Feather Icons</a></li>
+                            <li><a href="icons-simpleline.html">Simple Line Icons</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="#sidebarTables" data-toggle="collapse">
+                        <i class="fe-file-text"></i>
+                        <span>  Tables  </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarTables">
+                        <ul class="nav-second-level">
+                            <li><a href="tables-basic.html">Basic Tables</a></li>
+                            <li><a href="tables-datatable.html">Data Tables</a></li>
+                            <li><a href="tables-responsive.html">Responsive Table</a></li>
+                            <li><a href="tables-tablesaw.html">Tablesaw Tables</a></li>
+                            <li><a href="tables-foo.html">Foo Tables</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="menu-title">Users</li>
+                <li>
+                    <a href="#sidebarMaps" data-toggle="collapse">
+                        <i class="fe-map"></i>
+                        <span> Maps </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarMaps">
+                        <ul class="nav-second-level">
+                            <li>
+                                <a href="maps-google.html">Google Maps</a>
+                            </li>
+                            <li>
+                                <a href="maps-vector.html">Vector Maps</a>
+                            </li>
+                            <li>
+                                <a href="maps-mapael.html">Mapael Maps</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li>
+                    <a href="#sidebarAuth" data-toggle="collapse">
+                        <i class="fe-book-open"></i>
+                        <span>  Pages </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarAuth">
+                        <ul class="nav-second-level">
+                            <li><a href="pages-starter.html">Starter Page</a></li>
+                            <li><a href="pages-login.html">Login</a></li>
+                            <li><a href="pages-register.html">Register</a></li>
+                            <li><a href="pages-logout.html">Logout</a></li>
+                            <li><a href="pages-recoverpw.html">Recover Password</a></li>
+                            <li><a href="pages-lock-screen.html">Lock Screen</a></li>
+                            <li><a href="pages-confirm-mail.html">Confirm Mail</a></li>
+                            <li><a href="pages-404.html">Error 404</a></li>
+                            <li><a href="pages-404-alt.html">Error 404-alt</a></li>
+                            <li><a href="pages-500.html">Error 500</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="#sidebarExpages" data-toggle="collapse">
+                        <i class="fe-plus-square"></i>
+                        <span class="badge badge-success float-right">Hot</span>
+                        <span> Extra Pages  </span>
+                    </a>
+                    <div class="collapse" id="sidebarExpages">
+                        <ul class="nav-second-level">
+                            <li><a href="extras-timeline.html">Timeline</a></li>
+                            <li><a href="extras-profile.html">Profile</a></li>
+                            <li><a href="extras-invoice.html">Invoice</a></li>
+                            <li><a href="extras-faqs.html">FAQs</a></li>
+                            <li><a href="extras-pricing.html">Pricing</a></li>
+                            <li><a href="extras-email-template.html">Email Templates</a></li>
+                            <li><a href="extras-ratings.html">Ratings</a></li>
+                            <li><a href="extras-search-results.html">Search Results</a></li>
+                            <li><a href="extras-gallery.html">Gallery</a></li>
+                            <li><a href="extras-maintenance.html">Maintenance</a></li>
+                            <li><a href="extras-coming-soon.html">Coming Soon</a></li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li>
+                    <a href="#sidebarMultilevel" data-toggle="collapse">
+                        <i class="fe-share-2"></i>
+                        <span> Multi Level </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarMultilevel">
+                        <ul class="nav-second-level">
+                            <li>
+                                <a href="#sidebarMultilevel2" data-toggle="collapse">
+                                    Second Level <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="sidebarMultilevel2">
+                                    <ul class="nav-second-level">
+                                        <li>
+                                            <a href="javascript: void(0);">Item 1</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript: void(0);">Item 2</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li>
+                                <a href="#sidebarMultilevel3" data-toggle="collapse">
+                                    Third Level <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="sidebarMultilevel3">
+                                    <ul class="nav-second-level">
+                                        <li>
+                                            <a href="javascript: void(0);">Item 1</a>
+                                        </li>
+                                        <li>
+                                            <a href="#sidebarMultilevel4" data-toggle="collapse">
+                                                Item 2 <span class="menu-arrow"></span>
+                                            </a>
+                                            <div class="collapse" id="sidebarMultilevel4">
+                                                <ul class="nav-second-level">
+                                                    <li>
+                                                        <a href="javascript: void(0);">Item 1</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript: void(0);">Item 2</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>-->
+            </ul>
+        </div>
+        </li>
+        </ul>
+    </div>
+    <!-- End Sidebar -->
+    <div class="clearfix"></div>
+</div>
+<!-- Sidebar -left -->

@@ -1,0 +1,176 @@
+﻿@model Admin.ViewModels.RoleManagerViewModel
+
+@{
+    ViewBag.Title = "Manage Roles Edit";
+    ViewBag.Page = "Manage Roles Edit";
+
+    var userSaveChangesUrl = "/UserSetup/UserSaveChanges?roleId=" + ViewData["RoleId"] + "&roleName=" + ViewData["RoleName"];
+    var permissionSaveChangesUrl = "/UserSetup/PermissionSaveChanges?roleId=" + ViewData["RoleId"] + "&roleName=" + ViewData["RoleName"];
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    @if (!String.IsNullOrEmpty(ViewBag.Message1))
+                    {
+                        var statusMessageClass = ViewBag.Message1.StartsWith("Error") ? "danger" : "success";
+                        <div class="alert alert-@statusMessageClass alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            @ViewBag.Message1
+                        </div>
+                    }
+                    <div class="row">
+                        <div class="col-5">
+                            <h4 class="header-title">Role Users</h4>
+                            <p>Users assigned to this role</p>
+                        </div>
+                        <div class="col-7 align-self-center">
+                            <div class="d-flex justify-content-end align-items-center">
+                                <div class="mr-2">
+                                    <a href="@userSaveChangesUrl" class="btn btn-info waves-effect waves-light">Save <i class="fas fa-save"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-info">
+                                <tr>
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.AdminRoleUsersGet)
+                                {
+                                    <tr>
+                                        <td align="center">
+                                            @if (!string.IsNullOrEmpty(item.Avatar))
+                                            {<img src="~/assets/images/users/@item.Avatar" class="rounded-circle" height="25" />}
+                                            else
+                                            {<img src="~/assets/images/users/no-avatar.jpg" class="rounded-circle" height="25" />}
+                                        </td>
+                                        <td>@Html.DisplayFor(modelItem => item.FullName)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                                        <td align="center">
+                                            <div class="custom-control custom-switch">
+                                                @if (item.Checked == 1)
+                                                {<input type="checkbox" class="custom-control-input" onchange=UserChecked(this) data-id="@item.ID" data-roleId="@ViewBag.RoleId" id="chk-@item.ID" checked>}
+                                                else
+                                                {<input type="checkbox" class="custom-control-input" onchange=UserChecked(this) data-id="@item.ID" data-roleId="@ViewBag.RoleId" id="chk-@item.ID">}
+                                                <label class="custom-control-label" for="chk-@item.ID"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    @if (!String.IsNullOrEmpty(ViewBag.Message2))
+                    {
+                        var statusMessageClass = ViewBag.Message2.StartsWith("Error") ? "danger" : "success";
+                        <div class="alert alert-@statusMessageClass alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            @ViewBag.Message2
+                        </div>
+                    }
+                    <div class="row">
+                        <div class="col-5">
+                            <h4 class="header-title">@ViewBag.RoleName</h4>
+                            <p>Permissions linked to this role</p>
+                        </div>
+                        <div class="col-7 align-self-center">
+                            <div class="d-flex justify-content-end align-items-center">
+                                <div class="mr-2">
+                                    <a href="@permissionSaveChangesUrl" class="btn btn-info waves-effect waves-light">Save <i class="fas fa-save"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-info">
+                                <tr>
+                                    <th>Permission</th>
+                                    <th>Description</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.AdminRolePermissionsGet)
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.PermissionName)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                                        <td align="center">
+                                            <div class="custom-control custom-switch">
+                                                @if (item.Checked == 1)
+                                                {<input type="checkbox" class="custom-control-input" onchange=PermissionChecked(this) data-roleId="@ViewBag.RoleId" data-permissionId="@item.PermissionID" id="chk-@item.ID" checked>}
+                                                else
+                                                {<input type="checkbox" class="custom-control-input" onchange=PermissionChecked(this) data-roleId="@ViewBag.RoleId" data-permissionId="@item.PermissionID" id="chk-@item.ID">}
+                                                <label class="custom-control-label" for="chk-@item.ID"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="form-group mb-0">
+                        <a href="~/UserSetup/RolesManager" class="btn btn-dark waves-effect waves-light">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        function UserChecked(e) {
+            var model = {
+                id: $(e).attr("data-id"),
+                roleId: $(e).attr("data-roleId"),
+                isChecked: $(e).is(":checked")
+            };
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Content("~/")' + "UserSetup/UserChanges",
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            });
+        };
+
+        function PermissionChecked(e) {
+            var model = {
+                roleId: $(e).attr("data-roleId"),
+                permissionId: $(e).attr("data-permissionId"),
+                isChecked: $(e).is(":checked")
+            };
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Content("~/")' + "UserSetup/PermissionChanges",
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            });
+        };
+    </script>
+}

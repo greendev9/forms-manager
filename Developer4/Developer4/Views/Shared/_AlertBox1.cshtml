@@ -1,0 +1,21 @@
+﻿<link href="~/assets/libs/jquery-toast-plugin/jquery.toast.min.css" rel="stylesheet" />
+<script src="~/assets/libs/jquery-toast-plugin/jquery.toast.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var msg = '@TempData["smsg"]';
+
+        if (msg != '') {
+            $.toast({
+                text: msg,
+                showHideTransition: 'fade',
+                allowToastClose: true,
+                hideAfter: 5000,
+                stack: 3,
+                position: 'bottom-center',
+                textAlign: 'left',
+                loader: true,
+                loaderBg: '#9EC600'
+            });
+        }
+    });
+</script>

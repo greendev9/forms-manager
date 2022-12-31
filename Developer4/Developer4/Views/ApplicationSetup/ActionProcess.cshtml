@@ -1,0 +1,1093 @@
+﻿@model Admin.ViewModels.ProcessViewModel
+@using SharedAssemblies.Content.AppCode;
+@{
+    Html.EnableClientValidation(false);
+
+    ViewBag.Title = ViewBag.Page;
+    string formAction = "";
+    var isSurveyOrQuestionnaire = false;  // Set this variable to true if the form is a survey/questionnaire (pass a querystring value isSurvey=1 or something)
+
+    // Glossary items
+    var glOurServicesNavLinkTitle = "Our Processes";
+    string glServiceSingular = "Process";
+
+    if (ViewBag.Page == "Add Process")
+    {
+        formAction = "AddProcess";
+        Model.GeneratesEmail = 1;
+    }
+    else if (ViewBag.Page == "Modify Process")
+    {
+        formAction = "UpdateProcess";
+    }
+    else if (ViewBag.Page == "Add Survey/Questionnaire")
+    {
+        formAction = "AddSurvey";
+        isSurveyOrQuestionnaire = true;
+        glServiceSingular = "Survey";
+    }
+    else if (ViewBag.Page == "Modify Survey/Questionnaire")
+    {
+        formAction = "UpdateSurvey";
+        isSurveyOrQuestionnaire = true;
+        glServiceSingular = "Survey";
+    }
+
+    Layout = "~/Views/Shared/_CustomerSetupLayout.cshtml";
+
+    int id = 1;
+    if (Model.ProcessCosts != null && Model.ProcessCosts.Count() > 0) { id += Model.ProcessCosts.OrderByDescending(r => r.ID).FirstOrDefault().ID; }
+
+    var isAdmin = true;
+
+    // Settings
+    bool servicesCostUse = true;
+    bool showGovernmentFormConfigs = true;
+    bool serviceSendWelcomeEmailAfterPayment = true;
+}
+<script type="text/javascript">
+    var currentDomain = '@Url.Content("~")';
+
+    $(document).ready(function () {
+        $('#FormListHeaderMessage').on("summernote.change", function (e) {
+            textAreaChange($(this), true);
+        });
+
+
+
+        // The bold button (replace <b> tags with span bold style tags)
+        $(".note-btn-bold").on("click", function (e) {
+            setTimeout(function () {
+                textAreaChange($('#FormListHeaderMessage'));
+                @if (servicesCostUse && serviceSendWelcomeEmailAfterPayment) {
+                  @Html.Raw("textAreaChange($('#WelcomeEmail'));")
+                }
+            }, 1000);
+        });
+    });
+
+    function DeleteProcess(objID) {
+        showPleaseWaitModal();
+        var processId = document.getElementById(objID).getAttribute('processID');
+        var url = currentDomain + "ApplicationSetup/DeleteProcess/?id=" + processId;
+        window.location.href = url;
+    }
+</script>
+<style type="text/css">
+    .note-editable-background {
+        background-color: #ffffcc !important;
+        padding: 5px !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    .note-codable {
+        background-color: white !important;
+        color: black !important;
+    }
+
+    .not-allowed {
+        cursor: not-allowed;
+        pointer-events: all !important;
+    }
+</style>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <form id="myForm" asp-action="@formAction" method="post">
+                    <div class="card-body" style="float: right;">
+                        <div class="form-group mb-0">
+                            @if (isAdmin)
+                            {
+                                <button type="submit" class="btn btn-info waves-effect waves-light"><i class="fa fa-check"></i> Save</button>
+
+                                if (formAction.Contains("Update"))
+                                {
+                                    <button type="button" processID="@Model.ProcessId.ToString()" confirmTask="DeleteProcess" confirmTaskHeader="Delete @glServiceSingular"
+                                            confirmTaskObjID="btnDelete" id="btnDelete"
+                                            confirmTaskMsg="Deleting this @glServiceSingular.ToLower() will remove the @glServiceSingular.ToLower(), plus all data associated with it. Are you sure you completely remove it? (To preserve the data, make the @glServiceSingular.ToLower() inactive instead of deleting.)"
+                                            class="btn btn-danger waves-effect waves-light btn-confirm">
+                                        Delete
+                                    </button>
+                                }
+                            }
+                            @if (isSurveyOrQuestionnaire)
+                            {
+                                <a href="~/ApplicationSetup/Surveys" class="btn btn-dark waves-effect waves-light pleaseWait">Cancel</a>
+                            }
+                            else
+                            {
+                                <a href="~/ApplicationSetup/ProcessManager" class="btn btn-dark waves-effect waves-light pleaseWait">Cancel</a>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="header-title">@ViewBag.Page</h4>
+                        @if (Model.FormilaeProcess == 1)
+                        {
+                            <p style="color: #800000; font-weight: bold;">
+                                This @glServiceSingular.ToLower() is a Formilae pre-built @glServiceSingular.ToLower() and certain field(s)
+                                may be locked for editing and therefore read-only.
+                            </p>
+                        }
+
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.ProcessId)
+                        @Html.HiddenFor(model => model.FormilaeProcess)
+                        @Html.HiddenFor(model => model.HideFromServicesPurchasedList)
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ProcessName, String.Concat(glServiceSingular, " Name"), htmlAttributes: new { @class = "col-form-label" })
+                            @Html.EditorFor(model => model.ProcessName, new { htmlAttributes = new { @class = "form-control", @placeholder = String.Concat(glServiceSingular, " Name") } })
+                            @Html.ValidationMessageFor(model => model.ProcessName, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Summary, htmlAttributes: new { @class = "col-form-label" }) <i id="iResortQstnMoveAfter" class="mdi mdi-16px mdi-information-outline" data-container="body"
+                                                                                                                         data-toggle="popover" data-placement="top" data-html="true"
+                                                                                                                         data-content="Summary shown on the &quot;@glOurServicesNavLinkTitle&quot; page." title="Summary"
+                                                                                                                         data-original-title=""></i>
+                            @Html.EditorFor(model => model.Summary, new { htmlAttributes = new { @style = "height: 115px;", @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.Summary) } })
+                            @Html.ValidationMessageFor(model => model.Summary, "", new { @class = "text-danger" })
+                        </div>
+                        @if (showGovernmentFormConfigs)
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.GovernmentMailingAddress1, htmlAttributes: new { @class = "col-form-label" }) <i id="iResortQstnMoveAfter" class="mdi mdi-16px mdi-information-outline" data-container="body"
+                                                                                                                                               data-toggle="popover" data-placement="top" data-html="true"
+                                                                                                                                               data-content="Used as a token in PDF generation. Useful for coverletters autogenerated with PDFs... Packets to be sent to a government agency may need the mailing address in something like the cover letter. NOTE: Please use {br} to indicate line breaks."
+                                                                                                                                               title="Government Mailing Address"
+                                                                                                                                               data-original-title=""></i>
+                                @Html.EditorFor(model => model.GovernmentMailingAddress1, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.GovernmentMailingAddress1) } })
+                                @Html.ValidationMessageFor(model => model.GovernmentMailingAddress1, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        else
+                        {
+                            <input type="hidden" name="GovernmentMailingAddress1" id="GovernmentMailingAddress1" value="" />
+                        }
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PacketTitle, htmlAttributes: new { @class = "col-form-label" }) <i id="iResortQstnMoveAfter" class="mdi mdi-16px mdi-information-outline" data-container="body"
+                                                                                                                             data-toggle="popover" data-placement="top" data-html="true"
+                                                                                                                             data-content="The title that prints at the top of the generated PDF once all documents are combined. If empty, the &quot;@glServiceSingular Name&quot; field contents will be used."
+                                                                                                                             title="Packet Title"
+                                                                                                                             data-original-title=""></i>
+                            @Html.EditorFor(model => model.PacketTitle, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.PacketTitle) } })
+                            @Html.ValidationMessageFor(model => model.PacketTitle, "", new { @class = "text-danger" })
+                        </div>
+                        @if (1 == 0)
+                        {
+                            <!-- This was requested in error.. it's not in use but keeping just in case -->
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.RequiresAdminApproval)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isRequiresAdminApproval() id="chkRequiresAdminApproval" checked>
+                                    <label class="custom-control-label" for="chkRequiresAdminApproval">@Html.DisplayNameFor(model => model.RequiresAdminApproval)</label>
+                                </div>
+                            </div>
+
+                        }
+                        else
+                        {
+                            <input type="hidden" name="RequiresAdminApproval" id="RequiresAdminApproval" value="0" />
+                        }
+                        <div class="form-group">
+                            @Html.HiddenFor(model => model.GeneratesEmail)
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" onchange="isGeneratesEmail()" id="chkGeneratesEmail" checked>
+                                <label class="custom-control-label" for="chkGeneratesEmail">@Html.DisplayNameFor(model => model.GeneratesEmail)</label>
+                                <i id="iResortQstnMoveAfter" class="mdi mdi-16px mdi-information-outline" data-container="body"
+                                   data-toggle="popover" data-placement="top" data-html="true"
+                                   data-content="If enabled, the @glServiceSingular.ToLower() generates email instead of PDF of the form(s). Emails are sent to subscribers, plus the user who filled in the form once approved. If disabled, form(s) linked to this process should be set up for PDF generation."
+                                   title="Generates Email"
+                                   data-original-title=""></i>
+                            </div>
+                        </div>
+                        @if (Model.HideFromServicesPurchasedList == 1 || isSurveyOrQuestionnaire)
+                        {
+                            <!-- This only available for surveys/questionnaires -->
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ExternalRedirect, htmlAttributes: new { @class = "col-form-label" }) <i id="iResortQstnMoveAfter" class="mdi mdi-16px mdi-information-outline" data-container="body"
+                                                                                                                                      data-toggle="popover" data-placement="top" data-html="true"
+                                                                                                                                      data-content="If the @glServiceSingular is a survey/questionnaire, you can redirect the user to an external url (i.e. back to your company web site) as an option. This feature is only allowed for surveys/questionnaires."
+                                                                                                                                      title="External Redirect"
+                                                                                                                                      data-original-title=""></i>
+                                @Html.EditorFor(model => model.ExternalRedirect, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.ExternalRedirect) } })
+                                @Html.ValidationMessageFor(model => model.ExternalRedirect, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        else
+                        {
+                            <input type="hidden" name="ExternalRedirect" id="ExternalRedirect" value="" />
+                        }
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FormListHeaderMessage, htmlAttributes: new { @class = "col-form-label" }) <i id="iResortQstnMoveAfter" class="mdi mdi-16px mdi-information-outline" data-container="body"
+                                                                                                                                       data-toggle="popover" data-placement="top" data-html="true"
+                                                                                                                                       data-content="The message shown above the list of forms for the process on the portal form list page. (Not used in any emails.) Replaces Glossary Item &quot;FormListHeaderMessage&quot; for if desired on the &quot;@glServiceSingular&quot; level. Enter {Empty} if not desired.."
+                                                                                                                                       title="Form List Header Message"
+                                                                                                                                       data-original-title=""></i>
+                            <div style="margin-bottom: 7px;"><span style="font-weight: bold;">Tokens:</span> {Icon:Edit} &nbsp; &nbsp; <span class="badge badge-outline-info">HTML</span></div>
+                            @Html.EditorFor(model => model.FormListHeaderMessage, new { htmlAttributes = new { @origVal = Model.FormListHeaderMessage, @style = "height: 115px;", @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.FormListHeaderMessage) } })
+                            @Html.ValidationMessageFor(model => model.FormListHeaderMessage, "", new { @class = "text-danger" })
+                        </div>
+
+                        @if (servicesCostUse && serviceSendWelcomeEmailAfterPayment)
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.WelcomeEmail, htmlAttributes: new { @class = "col-form-label" }) <i id="iResortQstnMoveAfter" class="mdi mdi-16px mdi-information-outline" data-container="body"
+                                                                                                                                  data-toggle="popover" data-placement="top" data-html="true"
+                                                                                                                                  data-content="Email sent to client when they are marked as &quot;Paid&quot; for a @glServiceSingular (Only sent when &quot;ServicesCostUse&quot; and &quot;ServiceSendWelcomeEmailAfterPayment&quot; settings are enabled.)"
+                                                                                                                                  title="Welcome Email"
+                                                                                                                                  data-original-title=""></i>
+                                <div style="margin-bottom: 7px;"><span style="font-weight: bold;">Tokens:</span> {Process:Name} {Glossary:ServiceSingular} {Glossary:Services} {Client:FirstName} {ProcessCost:PriceWithDiscountIfAny} {Note:DiscountAppliedIfAny} {Table:FormsList} {Link:ContactUs} &nbsp; &nbsp; <span class="badge badge-outline-info">HTML</span></div>
+                                @Html.EditorFor(model => model.WelcomeEmail, new { htmlAttributes = new { @origVal = Model.WelcomeEmail, @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.WelcomeEmail) } })
+                                @Html.ValidationMessageFor(model => model.WelcomeEmail, "", new { @class = "text-danger" })
+                            </div>
+
+                        }
+                        else
+                        {
+                            <input type="hidden" name="WelcomeEmail" id="WelcomeEmail" value="" />
+                        }
+                        @if (isSurveyOrQuestionnaire)
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.HyperlinkDirectory, htmlAttributes: new { @class = "col-form-label" })
+                                @Html.DropDownList("HyperlinkDirectory", null, htmlAttributes: new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.NoEmailAuth)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isNoEmailAuth() id="chkNoEmailAuth" checked>
+                                    <label class="custom-control-label" for="chkNoEmailAuth">@Html.DisplayNameFor(model => model.NoEmailAuth)</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.BeginWithoutRegistration)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isBeginWithoutRegistration() id="chkBeginWithoutRegistration" checked>
+                                    <label class="custom-control-label" for="chkBeginWithoutRegistration">@Html.DisplayNameFor(model => model.BeginWithoutRegistration)</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.UserSuppliesEmail)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isUserSuppliesEmail() id="chkUserSuppliesEmail" checked>
+                                    <label class="custom-control-label" for="chkUserSuppliesEmail">@Html.DisplayNameFor(model => model.UserSuppliesEmail)</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.EmailSurveyEmailRequired)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isEmailSurveyEmailRequired() id="chkEmailSurveyEmailRequired" checked>
+                                    <label class="custom-control-label" for="chkEmailSurveyEmailRequired">@Html.DisplayNameFor(model => model.EmailSurveyEmailRequired)</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.HumanVerifyNeeded)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isHumanVerifyNeeded() id="chkHumanVerifyNeeded" checked>
+                                    <label class="custom-control-label" for="chkHumanVerifyNeeded">@Html.DisplayNameFor(model => model.HumanVerifyNeeded)</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.EmailSurveyNameUse)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isEmailSurveyNameUse() id="chkEmailSurveyNameUse" checked>
+                                    <label class="custom-control-label" for="chkEmailSurveyNameUse">@Html.DisplayNameFor(model => model.EmailSurveyNameUse)</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.EmailSurveyNameRequired)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isEmailSurveyNameRequired() id="chkEmailSurveyNameRequired" checked>
+                                    <label class="custom-control-label" for="chkEmailSurveyNameRequired">@Html.DisplayNameFor(model => model.EmailSurveyNameRequired)</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.EmailSurveyPhoneUse)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isEmailSurveyPhoneUse() id="chkEmailSurveyPhoneUse" checked>
+                                    <label class="custom-control-label" for="chkEmailSurveyPhoneUse">@Html.DisplayNameFor(model => model.EmailSurveyPhoneUse)</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.EmailSurveyPhoneRequired)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isEmailSurveyPhoneRequired() id="chkEmailSurveyPhoneRequired" checked>
+                                    <label class="custom-control-label" for="chkEmailSurveyPhoneRequired">@Html.DisplayNameFor(model => model.EmailSurveyPhoneRequired)</label>
+                                </div>
+                            </div>
+                            <div id="EmailSurveyStartHeader" class="form-group">
+                                @Html.LabelFor(model => model.EmailSurveyStartHeaderText, htmlAttributes: new { @class = "col-form-label" })
+                                @Html.EditorFor(model => model.EmailSurveyStartHeaderText, new { htmlAttributes = new { @origVal = Model.EmailSurveyStartHeaderText, @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.EmailSurveyStartHeaderText) } })
+                                @Html.ValidationMessageFor(model => model.EmailSurveyStartHeaderText, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                <label for="EmailSurveyImage" id="lblEmailSurveyImage" class="col-form-label">Image string</label>
+                                <select id="EmailSurveyImage" class="form-control" name="EmailSurveyImage"></select>
+                            </div>
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.QuestionnaireGeneratePDF)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isQuestionnaireGeneratePDF() id="chkQuestionnaireGeneratePDF" checked>
+                                    <label class="custom-control-label" for="chkQuestionnaireGeneratePDF">@Html.DisplayNameFor(model => model.QuestionnaireGeneratePDF)</label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @if (formAction.Contains("Update"))
+                    {
+                        <div class="card-body">
+                            @{ var FormName = !isSurveyOrQuestionnaire ? "Process Forms" : "Forms"; }
+                            <h4 class="header-title">@FormName</h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Form Code</th>
+                                            <th>Form Name</th>
+                                            <th style="text-align: center">Active</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.ProcessForms.Count() > 0)
+                                        {
+                                            foreach (var item in Model.ProcessForms)
+                                            {
+                                                var isFormilaeProcessForm = !isSurveyOrQuestionnaire && item.FormilaeProcessForm == 1 ? "disabled not-allowed" : "";
+                                                var isFormActive = item.Active == 1 ? "checked" : null;
+                                                var processFormEditLink = isFormilaeProcessForm.Contains("disabled") ? "javascript:;" : Url.Content("~") + "ApplicationSetup/UpdateProcessForm/" + item.ID.ToString();
+                                                <tr>
+                                                    <th style="display:none">@item.ID</th>
+                                                    <td>@Html.DisplayFor(modelItem => item.FormCode)</td>
+                                                    <td>@Html.DisplayFor(modelItem => item.FormName)</td>
+                                                    <td align="center">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" onchange=Checked(this) data-id="@item.ID" id="chk-@item.ID" @isFormActive @isFormilaeProcessForm>
+                                                            <label class="custom-control-label @isFormilaeProcessForm" for="chk-@item.ID"></label>
+                                                        </div>
+                                                    </td>
+                                                    @if (!isSurveyOrQuestionnaire)
+                                                    {
+                                                        <td align="center"><a href="@processFormEditLink" class="btn btn-info waves-effect waves-light @isFormilaeProcessForm">Edit</a></td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td align="center"><a href="@processFormEditLink" class="btn btn-info waves-effect waves-light @isFormilaeProcessForm">Edit</a></td>
+                                                    }
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="4" align="center">No records to display.</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+
+                    @if (servicesCostUse && Model.HideFromServicesPurchasedList == 0 && !isSurveyOrQuestionnaire)
+                    {
+                        <div class="card-body">
+                            <h4 class="header-title">@glServiceSingular Costs</h4>
+                            <p style="color: cadetblue;">
+                                Click the <span style="font-weight: bold;">+Add</span> button to add a new row and
+                                then the <span style="font-weight: bold;">Save</span> or changes will not be saved.
+                            </p>
+                            <div class="table-responsive">
+                                <table class="table" id="myTable">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Item Name</th>
+                                            <th>Description</th>
+                                            <th style="text-align: left">Price</th>
+                                            <th style="text-align: left">Sort Order</th>
+                                            <th style="text-align: center">Active</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="myTBody">
+                                        @{ var counter = 0; }
+                                        @if (Model.ProcessCosts != null)
+                                        {
+
+                                            for (int i = 0; i < Model.ProcessCosts.Count(); i++)
+                                            {
+                                                counter = Model.ProcessCosts[i].ID;
+                                                <tr id="@Model.ProcessCosts[i].ID">
+                                                    <td>
+                                                        <input type="text" id="txtItemName-@Model.ProcessCosts[i].ID" class="form-control" value="@Model.ProcessCosts[i].ItemName" onchange="updateData(@Model.ProcessCosts[i].ID)" />
+                                                        <label id="vldItemName-@Model.ProcessCosts[i].ID" class="form-text text-danger" style="display:none">Required</label>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" id="txtItemDescription-@Model.ProcessCosts[i].ID" class="form-control" value="@Model.ProcessCosts[i].ItemDescription" onchange="updateData(@Model.ProcessCosts[i].ID)" />
+                                                        <label id="vldItemDescription-@Model.ProcessCosts[i].ID" class="form-text text-danger" style="display:none">Required</label>
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" id="txtPrice-@Model.ProcessCosts[i].ID" class="form-control text-right"
+                                                               value="@Model.ProcessCosts[i].Price" onchange="updateData(@Model.ProcessCosts[i].ID)" />
+                                                        <label id="vldPrice-@Model.ProcessCosts[i].ID" class="form-text text-danger" style="display:none">Required</label>
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" id="txtSortOrder-@Model.ProcessCosts[i].ID" class="form-control text-right" value="@Model.ProcessCosts[i].SortOrder" onchange="updateData(@Model.ProcessCosts[i].ID)" />
+                                                        <label id="vldSortOrder-@Model.ProcessCosts[i].ID" class="form-text text-danger" style="display:none">Required</label>
+                                                    </td>
+                                                    <td align="center">
+                                                        <div class="custom-control custom-switch">
+                                                            @if (Model.ProcessCosts[i].Active == 1)
+                                                            {<input type="checkbox" id="chk-@Model.ProcessCosts[i].ID" class="custom-control-input" onchange="updateData(@Model.ProcessCosts[i].ID)" checked>}
+                                                            else
+                                                            {<input type="checkbox" id="chk-@Model.ProcessCosts[i].ID" class="custom-control-input" onchange="updateData(@Model.ProcessCosts[i].ID)">}
+                                                            <label for="chk-@Model.ProcessCosts[i].ID" class="custom-control-label"></label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        @{ counter = counter + 1; }
+                                        <tr id="@counter.ToString()">
+                                            <td>
+                                                <input type="text" id="txtItemName-@id" class="form-control" />
+                                                <label id="vldItemName-@id" class="form-text text-danger" style="display:none">Required</label>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtItemDescription-@id" class="form-control" />
+                                                <label id="vldItemDescription-@id" class="form-text text-danger" style="display:none">Required</label>
+                                            </td>
+                                            <td>
+                                                <input type="number" id="txtPrice-@id" class="form-control text-right" />
+                                                <label id="vldPrice-@id" class="form-text text-danger" style="display:none">Required</label>
+                                            </td>
+                                            <td>
+                                                <input type="number" id="txtSortOrder-@id" class="form-control text-right" />
+                                                <label id="vldSortOrder-@id" class="form-text text-danger" style="display:none">Required</label>
+                                            </td>
+                                            <td align="center"><button type="button" class="btn btn-primary waves-effect waves-light" id="btnAdd" onclick="newData(@id)"><i class="fa fa-plus"></i> Add</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+    <link href="~/assets/libs/jquery-toast-plugin/jquery.toast.min.css" rel="stylesheet" />
+    <script src="~/assets/libs/jquery-toast-plugin/jquery.toast.min.js"></script>
+
+    <script type="text/javascript">
+        function updateHtmlAllowedArea(obj, newHtml) {
+            obj.summernote('code', newHtml);
+        }
+
+        function textAreaChange(obj, summerNoteChange) {
+            summerNoteChange = summerNoteChange || false;
+
+            //var requiredField = currentRow.find("#txtValueWithDefault").attr("isRequired");
+            var origVal = obj.attr("origVal");
+            var currentVal = Trim(obj.val());
+
+            //console.log("origVal: " + origVal + "\ncurrentVal: " + currentVal);
+
+            if (!summerNoteChange) {
+                currentVal = Trim(obj.summernote('code'));
+                var newVal = Replace(currentVal, "<b>", "<span style='font-weight: bold;'>");
+                newVal = Replace(newVal, "</b>", "</span>");
+                newVal = Replace(newVal, "<strong>", "<span style='font-weight: bold;'>");
+                newVal = Replace(newVal, "</strong>", "</span>");
+                updateHtmlAllowedArea(obj, newVal);
+            }
+
+
+            /*  // If any summer note ever becomes "required", then add this (It hasn't been tested, so test)
+            if (requiredField == "1" && currentVal == "") {
+                obj.summernote('code', origVal);
+                var noteEditableFieldId = obj.attr("fieldId");
+                noteEditableFieldId = Replace(noteEditableFieldId, "txtValueWithDefault", "dvNoteEditable");
+                if (!($("#" + noteEditableFieldId).attr("id") !== undefined)) {
+                    obj.next().find('.note-editable').attr("id", noteEditableFieldId);
+                }
+                $("#" + noteEditableFieldId).removeClass('note-editable');
+                $("#" + noteEditableFieldId).addClass("note-editable-background");
+
+
+                formilaeAlert("This field can not be left empty.");
+            }
+            */
+        }
+
+
+        $(document).ready(function () {
+            if ($("#RequiresAdminApproval").val() == 1) { $("#chkRequiresAdminApproval").prop("checked", true); }
+            else { $("#chkRequiresAdminApproval").prop("checked", false); }
+
+            if ($("#GeneratesEmail").val() == 1) { $("#chkGeneratesEmail").prop("checked", true); }
+            else { $("#chkGeneratesEmail").prop("checked", false); }
+
+            if ($("#NoEmailAuth").val() == 1) { $("#chkNoEmailAuth").prop("checked", true); }
+            else { $("#chkNoEmailAuth").prop("checked", false); }
+
+            if ($("#UserSuppliesEmail").val() == 1) { $("#chkUserSuppliesEmail").prop("checked", true); }
+            else { $("#chkUserSuppliesEmail").prop("checked", false); }
+
+            if ($("#EmailSurveyEmailRequired").val() == 1) { $("#chkEmailSurveyEmailRequired").prop("checked", true); }
+            else { $("#chkEmailSurveyEmailRequired").prop("checked", false); }
+
+            if ($("#HumanVerifyNeeded").val() == 1) { $("#chkHumanVerifyNeeded").prop("checked", true); }
+            else { $("#chkHumanVerifyNeeded").prop("checked", false); }
+
+            if ($("#EmailSurveyNameUse").val() == 1) { $("#chkEmailSurveyNameUse").prop("checked", true); }
+            else { $("#chkEmailSurveyNameUse").prop("checked", false); }
+
+            if ($("#EmailSurveyNameRequired").val() == 1) { $("#chkEmailSurveyNameRequired").prop("checked", true); }
+            else { $("#chkEmailSurveyNameRequired").prop("checked", false); }
+
+            if ($("#EmailSurveyPhoneUse").val() == 1) { $("#chkEmailSurveyPhoneUse").prop("checked", true); }
+            else { $("#chkEmailSurveyPhoneUse").prop("checked", false); }
+
+            if ($("#EmailSurveyPhoneRequired").val() == 1) { $("#chkEmailSurveyPhoneRequired").prop("checked", true); }
+            else { $("#chkEmailSurveyPhoneRequired").prop("checked", false); }
+
+            if ($("#BeginWithoutRegistration").val() == 1) { $("#chkBeginWithoutRegistration").prop("checked", true); }
+            else { $("#chkBeginWithoutRegistration").prop("checked", false); }
+
+            if ($("#QuestionnaireGeneratePDF").val() == 1) { $("#chkQuestionnaireGeneratePDF").prop("checked", true); }
+            else { $("#chkQuestionnaireGeneratePDF").prop("checked", false); }
+
+            if ($("#FormilaeProcess").val() == 1) {
+                $('#ProcessName').attr('readonly', true);
+                $('#Summary').attr('readonly', true);
+                $('#GovernmentMailingAddress1').attr('readonly', true);
+                $('#PacketTitle').attr('readonly', true);
+                $('#chkRequiresAdminApproval').attr('disabled', true);
+                $('#chkGeneratesEmail').attr('disabled', true);
+            }
+
+            //if ($("#HideFromServicesPurchasedList").val() == 0) {
+            //    $('#ExternalRedirect').attr('readonly', true);
+            //}
+
+            isRequiresAdminApproval();
+            isGeneratesEmail();
+            isNoEmailAuth();
+            isUserSuppliesEmail();
+            isEmailSurveyEmailRequired();
+            isHumanVerifyNeeded();
+            isEmailSurveyNameUse();
+            isEmailSurveyNameRequired();
+            isEmailSurveyPhoneUse();
+            isEmailSurveyPhoneRequired();
+            isBeginWithoutRegistration();
+            isQuestionnaireGeneratePDF();
+
+            $("#myForm").validate({
+                errorClass: "field-validation-error text-danger",
+                errorElement: "span",
+                rules: {
+                    ProcessName: {
+                        required: true,
+                        maxlength: 50
+                    },
+                    Summary: {
+                        required: true,
+                        maxlength: 500
+                    },
+                    GovernmentMailingAddress1: {
+                        maxlength: 500
+                    },
+                    PacketTitle: {
+                        maxlength: 255
+                    },
+                    ExternalRedirect: {
+                        maxlength: 2050
+                    }
+                },
+                messages: {
+                    ProcessName: {
+                        maxlength: "This field can not be longer than 50 characters."
+                    },
+                    Summary: {
+                        maxlength: "This field can not be longer than 500 characters."
+                    },
+                    GovernmentMailingAddress1: {
+                        maxlength: "This field can not be longer than 500 characters."
+                    },
+                    PacketTitle: {
+                        maxlength: "This field can not be longer than 255 characters."
+                    },
+                    ExternalRedirect: {
+                        maxlength: "This field can not be longer than 2050 characters."
+                    }
+                }
+            });
+        });
+
+        function isRequiresAdminApproval() {
+            if ($("#chkRequiresAdminApproval").is(":checked")) { $("#RequiresAdminApproval").val(1); }
+            else { $("#RequiresAdminApproval").val(0); }
+        }
+        function isGeneratesEmail() {
+            if ($("#chkGeneratesEmail").is(":checked")) { $("#GeneratesEmail").val(1); }
+            else { $("#GeneratesEmail").val(0); }
+        }
+        function isNoEmailAuth() {
+            if ($("#chkNoEmailAuth").is(":checked")) {
+                $("#NoEmailAuth").val(1);
+
+                $("#chkUserSuppliesEmail").prop("checked", false);
+                $("#chkUserSuppliesEmail").attr("disabled", true);
+            }
+            else {
+                $("#NoEmailAuth").val(0);
+
+                $("#chkUserSuppliesEmail").attr("disabled", false);
+            }
+            isUserSuppliesEmail();
+            //setEmailSurveyImage();
+        }
+        function isUserSuppliesEmail() {
+            if ($("#chkUserSuppliesEmail").is(":checked")) {
+                $("#UserSuppliesEmail").val(1);
+
+                $("#chkEmailSurveyEmailRequired").attr("disabled", false);
+                $("#chkHumanVerifyNeeded").attr("disabled", false);
+                $("#chkEmailSurveyNameUse").attr("disabled", false);
+                $("#chkEmailSurveyNameRequired").attr("disabled", false);
+                $("#chkEmailSurveyPhoneUse").attr("disabled", false);
+                $("#chkEmailSurveyPhoneRequired").attr("disabled", false);
+                $("#chkBeginWithoutRegistration").attr("disabled", false);
+
+                $("#EmailSurveyStartHeader").show();
+            }
+            else {
+                $("#UserSuppliesEmail").val(0);
+
+                $("#chkEmailSurveyEmailRequired").prop("checked", false);
+                $("#chkEmailSurveyEmailRequired").attr("disabled", true);
+
+                $("#chkHumanVerifyNeeded").prop("checked", false);
+                $("#chkHumanVerifyNeeded").attr("disabled", true);
+
+                $("#chkEmailSurveyNameUse").prop("checked", false);
+                $("#chkEmailSurveyNameUse").attr("disabled", true);
+
+                $("#chkEmailSurveyNameRequired").prop("checked", false);
+                $("#chkEmailSurveyNameRequired").attr("disabled", true);
+
+                $("#chkEmailSurveyPhoneUse").prop("checked", false);
+                $("#chkEmailSurveyPhoneUse").attr("disabled", true);
+
+                $("#chkEmailSurveyPhoneRequired").prop("checked", false);
+                $("#chkEmailSurveyPhoneRequired").attr("disabled", true);
+
+                $("#chkBeginWithoutRegistration").prop("checked", false);
+                $("#chkBeginWithoutRegistration").attr("disabled", true);
+
+                $("#EmailSurveyStartHeader").hide();
+            }
+            setEmailSurveyImage();
+        }
+        function isEmailSurveyEmailRequired() {
+            if ($("#chkEmailSurveyEmailRequired").is(":checked")) { $("#EmailSurveyEmailRequired").val(1); }
+            else { $("#EmailSurveyEmailRequired").val(0); }
+        }
+        function isHumanVerifyNeeded() {
+            if ($("#chkHumanVerifyNeeded").is(":checked")) { $("#HumanVerifyNeeded").val(1); }
+            else { $("#HumanVerifyNeeded").val(0); }
+        }
+        function isEmailSurveyNameUse() {
+            if ($("#chkEmailSurveyNameUse").is(":checked")) { $("#EmailSurveyNameUse").val(1); }
+            else { $("#EmailSurveyNameUse").val(0); }
+        }
+        function isEmailSurveyNameRequired() {
+            if ($("#chkEmailSurveyNameRequired").is(":checked")) { $("#EmailSurveyNameRequired").val(1); }
+            else { $("#EmailSurveyNameRequired").val(0); }
+        }
+        function isEmailSurveyPhoneUse() {
+            if ($("#chkEmailSurveyPhoneUse").is(":checked")) { $("#EmailSurveyPhoneUse").val(1); }
+            else { $("#EmailSurveyPhoneUse").val(0); }
+        }
+        function isEmailSurveyPhoneRequired() {
+            if ($("#chkEmailSurveyPhoneRequired").is(":checked")) { $("#EmailSurveyPhoneRequired").val(1); }
+            else { $("#EmailSurveyPhoneRequired").val(0); }
+        }
+        function isBeginWithoutRegistration() {
+            if ($("#chkBeginWithoutRegistration").is(":checked")) { $("#BeginWithoutRegistration").val(1); }
+            else { $("#BeginWithoutRegistration").val(0); }
+        }
+        function isQuestionnaireGeneratePDF() {
+            if ($("#chkQuestionnaireGeneratePDF").is(":checked")) { $("#QuestionnaireGeneratePDF").val(1); }
+            else { $("#QuestionnaireGeneratePDF").val(0); }
+        }
+
+        function setEmailSurveyImage() {
+            var url = '@Url.Content("~/")' + "ApplicationSetup/GetEmailSurveyImage";
+
+            $.getJSON(url, { noEmailAuth: $("#NoEmailAuth").val(), userSuppliesEmail: $("#UserSuppliesEmail").val() }, function (response) {
+                if (response.success) {
+                    $("#EmailSurveyImage").empty();
+                    $("#EmailSurveyImage").attr("disabled", false);
+
+                    var items = null;
+                    $.each(response.data, function (i, itemData) {
+                        if (itemData.KeyValue == '@Model.EmailSurveyImage') {
+                            items += "<option value='" + itemData.KeyValue + "' selected>" + itemData.DisplayText + "</option>";
+                        }
+                        else {
+                            items += "<option value='" + itemData.KeyValue + "'>" + itemData.DisplayText + "</option>";
+                        }
+                    });
+
+                    $("#EmailSurveyImage").html(items);
+                    $("#lblEmailSurveyImage").text(response.text);
+                }
+                else {
+                    $("#EmailSurveyImage").empty();
+                    $("#EmailSurveyImage").attr("disabled", true);
+                }
+            });
+        }
+
+        function Checked(e) {
+            var model = {
+                id: $(e).attr("data-id"),
+                isChecked: $(e).is(":checked")
+            };
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Content("~/")' + "ApplicationSetup/ProcessFormActiveSet",
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    if (data.success) {
+                        $.toast({
+                            text: 'The changes have been made successfully.',
+                            showHideTransition: 'fade',
+                            allowToastClose: true,
+                            hideAfter: 5000,
+                            stack: 3,
+                            position: 'bottom-center',
+                            textAlign: 'left',
+                            loader: true,
+                            loaderBg: '#9EC600'
+                        });
+                    }
+                    else { alert('Error!'); }
+                }
+            });
+        }
+
+        function validateForm(i, newRowAdd) {
+            newRowAdd = newRowAdd || false;
+            var flag = true;
+            var err = 0;
+
+            var name = Trim($("#txtItemName-" + i).val());
+            if (name == "") {
+                $("#vldItemName-" + i).show();
+                err = err + 1;
+            }
+            else {
+                $("#vldItemName-" + i).hide();
+            }
+
+            if (Trim($("#txtItemDescription-" + i).val()) == "") {
+                $("#vldItemDescription-" + i).show();
+                err = err + 1;
+            }
+            else {
+                $("#vldItemDescription-" + i).hide();
+            }
+
+            if (Trim($("#txtPrice-" + i).val()) == "") {
+                $("#vldPrice-" + i).show();
+                err = err + 1;
+            }
+            else {
+                $("#vldPrice-" + i).hide();
+            }
+
+            if (Trim($("#txtSortOrder-" + i).val()) == "") {
+                $("#vldSortOrder-" + i).show();
+                err = err + 1;
+            }
+            else {
+                $("#vldSortOrder-" + i).hide();
+            }
+
+            //console.log("subErrCount: " + err + "\nflag: " + flag);
+
+            // If they blank everything out for a new row, then don't return errors
+            if (err == 4 && !newRowAdd) {
+                err = 0;
+                $("#vldItemName-" + i).hide();
+                $("#vldItemDescription-" + i).hide();
+                $("#vldPrice-" + i).hide();
+                $("#vldSortOrder-" + i).hide();
+            }
+
+            if (err > 0) {
+                flag = false;
+            }
+
+            //console.log("subErrCount: " + err + "\nflag: " + flag);
+            return flag;
+        }
+
+        function newData(id) {
+            if (validateForm(id, true)) {
+
+                var model = {
+                    id: id,
+                    itemName: $("#txtItemName-" + id).val(),
+                    itemDescription: $("#txtItemDescription-" + id).val(),
+                    price: $("#txtPrice-" + id).val(),
+                    sortOrder: $("#txtSortOrder-" + id).val(),
+                    active: 1
+                };
+                //$("#btnAdd").closest("tr").remove();
+                $("#btnAdd").closest("tr").html("<td id='addCostPleaseWaitRow' colspan='5' style='text-align: center;'><i class='fa fa-spinner fa-spin' style='font-size:15px; color: #777;'></i> Please wait...</td>");
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Content("~/")' + "ApplicationSetup/NewProcessCosts",
+                    data: JSON.stringify(model),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            var tr = $('<tr id="' + model.id + '">');
+                            tr.append('<td><input type="text" id="txtItemName-' + model.id + '" class="form-control" value="' + model.itemName + '" onchange="updateNewData(' + model.id + ')" />' +
+                                '<label id="vldItemName-' + model.id + '" class="form-text text-danger" style="display:none">Required</label></td>');
+                            tr.append('<td><input type="text" id="txtItemDescription-' + model.id + '" class="form-control" value="' + model.itemDescription + '" onchange="updateNewData(' + model.id + ')" />' +
+                                '<label id="vldItemDescription-' + model.id + '" class="form-text text-danger" style="display:none">Required</label></td>');
+                            tr.append('<td><input type="number" id="txtPrice-' + model.id + '" class="form-control text-right" value="' + model.price + '" onchange="updateNewData(' + model.id + ')" />' +
+                                '<label id="vldPrice-' + model.id + '" class="form-text text-danger" style="display:none">Required</label></td>');
+                            tr.append('<td><input type="number" id="txtSortOrder-' + model.id + '" class="form-control text-right" value="' + model.sortOrder + '" onchange="updateNewData(' + model.id + ')" />' +
+                                '<label id="vldSortOrder-' + model.id + '" class="form-text text-danger" style="display:none">Required</label></td>');
+                            tr.append('<td align="center"><div class="custom-control custom-switch">' +
+                                '<input type="checkbox" id="chk-' + model.id + '" class="custom-control-input" onchange="updateNewData(' + model.id + ')" checked>' +
+                                '<label for="chk-' + model.id + '" class="custom-control-label"></label></div></td>');
+                            $("#myTable").append(tr);
+
+                            model.id++;
+                            tr = $("<tr/>");
+                            tr.append('<td><input type="text" id="txtItemName-' + model.id + '" class="form-control" />' +
+                                '<label id="vldItemName-' + model.id + '" class="form-text text-danger" style="display:none">Required</label></td >');
+                            tr.append('<td><input type="text" id="txtItemDescription-' + model.id + '" class="form-control" />' +
+                                '<label id="vldItemDescription-' + model.id + '" class="form-text text-danger" style="display:none">Required</label></td >');
+                            tr.append('<td><input type="number" id="txtPrice-' + model.id + '" class="form-control text-right" />' +
+                                '<label id="vldPrice-' + model.id + '" class="form-text text-danger" style="display:none">Required</label></td >');
+                            tr.append('<td><input type="number" id="txtSortOrder-' + model.id + '" class="form-control text-right" />' +
+                                '<label id="vldSortOrder-' + model.id + '" class="form-text text-danger" style="display:none">Required</label></td >');
+                            tr.append('<td align="center"><button type="button" class="btn btn-primary waves-effect waves-light" id="btnAdd" onclick="newData(' + model.id + ')"><i class="fa fa-plus"></i> Add</button></td>');
+                            tr.attr("id", model.id);
+                            $("#myTable").append(tr);
+                            $("#addCostPleaseWaitRow").remove();
+                        }
+                        else {
+                            $("#addCostPleaseWaitRow").remove();
+                            formilaeAlert("An error occurred. Please try again and contact the web administrator if the issue persists.");
+                        }
+                    },
+                    error: function () {
+                        $("#addCostPleaseWaitRow").remove();
+                        formilaeAlert("An error occurred. Please try again and contact the web administrator if the issue persists.");
+                    }
+                });
+            }
+        }
+
+        function updateNewData(id) {
+            if (validateForm(id)) {
+                var isChecked;
+
+                if ($("#chk-" + id).is(":checked")) { isChecked = 1; }
+                else { isChecked = 0; }
+
+                var model = {
+                    id: id,
+                    itemName: $("#txtItemName-" + id).val(),
+                    itemDescription: $("#txtItemDescription-" + id).val(),
+                    price: $("#txtPrice-" + id).val(),
+                    sortOrder: $("#txtSortOrder-" + id).val(),
+                    active: isChecked
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Content("~/")' + "ApplicationSetup/NewProcessCosts",
+                    data: JSON.stringify(model),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                });
+            }
+        }
+
+        function updateData(id) {
+            if (validateForm(id)) {
+                var isChecked;
+
+                if ($("#chk-" + id).is(":checked")) { isChecked = 1; }
+                else { isChecked = 0; }
+
+                var model = {
+                    id: id,
+                    itemName: $("#txtItemName-" + id).val(),
+                    itemDescription: $("#txtItemDescription-" + id).val(),
+                    price: $("#txtPrice-" + id).val(),
+                    sortOrder: $("#txtSortOrder-" + id).val(),
+                    active: isChecked,
+                    processId: $("#ProcessId").val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Content("~/")' + "ApplicationSetup/OldProcessCosts",
+                    data: JSON.stringify(model),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                });
+            }
+        }
+
+        function validateAddButtonClick() {
+            var valid = false;
+            $("input[id^='txtItemName-']").each(function () {
+                var val = Trim($(this).val());
+                if (val == "") {
+                    valid = true;
+                }
+            });
+
+            return valid;
+        }
+
+        $("#myForm").on('submit', function (e) {
+            e.preventDefault();
+            if ($("#myForm").valid()) {
+                var isSurvey = '@isSurveyOrQuestionnaire';
+                if (isSurvey == "True") {
+                    e.currentTarget.submit();
+                }
+                else {
+                    var error = 0;
+
+                    $("#myTBody tr").each(function () {
+                        var id = this.id;
+                        var incrementId = false;
+                        if (id === undefined || id == "") {
+                            id = 1;
+                            incrementId = true;  // Means they are in "add" mode
+                        }
+                        if (!validateForm(id)) {
+                            error++;
+                        }
+
+                        if (incrementId) {
+                            id = id + 1;
+                        }
+                    });
+
+                    setTimeout(function () {
+                        if (error > 0) {
+                            formilaeAlert("Please fill in all required fields");
+                        }
+                        else if (!validateAddButtonClick()) {
+                            formilaeAlert("Please click the <span style='font-weight: bold;'>+Add</span> button if adding a new cost row.");
+                        }
+                        else {
+                            showPleaseWaitModal();
+                            e.currentTarget.submit();
+                            //alert("form submitted");
+                        }
+                    }, 500);
+                }
+            }
+        });
+    </script>
+
+    <!-- Summernote -->
+    <link href="~/assets/libs/summernote/summernote-bs4.min.css" rel="stylesheet" type="text/css" />
+    <script src="~/assets/libs/summernote/summernote-bs4.min.js"></script>
+    <script type="text/javascript">
+        $('#FormListHeaderMessage').summernote({
+            placeholder: '',
+            onPaste: function (e) {
+                var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+                e.preventDefault();
+                document.execCommand('insertText', false, bufferText);
+            },
+            lineWrapping: false,
+            height: 200,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'italic', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link']],
+                ['view', ['fullscreen', 'codeview']]
+            ]
+        });
+
+        @if (servicesCostUse && serviceSendWelcomeEmailAfterPayment) {
+            @Html.Raw("$('#WelcomeEmail').summernote({")
+            @Html.Raw("placeholder: '',")
+            @Html.Raw("onPaste: function (e) {")
+            @Html.Raw("var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');")
+            @Html.Raw("e.preventDefault();")
+            @Html.Raw("document.execCommand('insertText', false, bufferText);")
+            @Html.Raw("},")
+            @Html.Raw("lineWrapping: false,")
+            @Html.Raw("height: 250,")
+            @Html.Raw("toolbar: [")
+            @Html.Raw("['style', ['style']],")
+            @Html.Raw("['font', ['bold', 'underline', 'italic', 'clear']],")
+            @Html.Raw("['color', ['color']],")
+            @Html.Raw("['para', ['ul', 'ol', 'paragraph']],")
+            @Html.Raw("['table', ['table']],")
+            @Html.Raw("['insert', ['link']],")
+            @Html.Raw("['view', ['fullscreen', 'codeview']]")
+            @Html.Raw("]")
+            @Html.Raw("});")
+        }
+    </script>
+    <script type="text/javascript">
+        $('#EmailSurveyStartHeaderText').summernote({
+            placeholder: '',
+            onPaste: function (e) {
+                var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+                e.preventDefault();
+                document.execCommand('insertText', false, bufferText);
+            },
+            lineWrapping: false,
+            height: 200,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'italic', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link']],
+                ['view', ['fullscreen', 'codeview']]
+            ]
+        });
+    </script>
+}

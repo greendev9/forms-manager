@@ -1,0 +1,264 @@
+﻿@model IEnumerable<SharedAssemblies.Models.AdminLookupsGet>
+
+@{
+    ViewBag.Title = "Manager Choice Lists";
+    ViewBag.Page = ViewBag.Title;
+    int i = 0;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    @if (!String.IsNullOrEmpty(ViewBag.Message))
+                    {
+                        var statusMessageClass = ViewBag.Message.StartsWith("Error") ? "danger" : "success";
+                        <div class="alert alert-@statusMessageClass alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            @ViewBag.Message
+                        </div>
+                    }
+                    <div class="row">
+                        <h4 class="header-title col-5">@ViewBag.Title</h4>
+                        <div class="col-7 align-self-center">
+                            <div class="d-flex justify-content-end align-items-center">
+                                <div class="mr-2">
+                                    <a data-toggle="modal" href="#mdlAdd" class="btn btn-info waves-effect waves-light">Add</a>
+
+                                    <div id="mdlAdd" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title">Add</h4>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" aria-hidden="true"><i class="fas fa-times"></i></button>
+                                                </div>
+                                                <form id="myForm">
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label for="listName" class="control-label">List Name</label>
+                                                                    <input type="text" class="form-control" id="listName" placeholder="List Name" maxlength="200" required>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-danger waves-effect text-left" data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-info waves-effect waves-light">Save</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form asp-action="ChoiceListManager" method="get">
+                        <div class="form-group row">
+                            <span class="col-md-3">
+                                <input type="text" name="SearchString" placeholder="Search" class="form-control" value="@ViewData["CurrentFilter"]" />
+                            </span>
+                            <span><input type="submit" value="Search" class="btn btn-primary" /></span>
+                        </div>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-info">
+                                <tr>
+                                    <th>#</th>
+                                    <th>List Name</th>
+                                    <th># Records</th>
+                                    <th style="text-align: center">Form(s)</th>
+                                    <th style="text-align: center">Active</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Count() > 0)
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        i++;
+                                        <tr>
+                                            <th>@i</th>
+                                            <td>@Html.DisplayFor(modelItem => item.ListName)</td>
+                                            <td>
+                                                @if (item.NoRecords == 0)
+                                                { @Html.DisplayFor(modelItem => item.NoRecords) }
+                                                else
+                                                {
+                                                    <a data-toggle="modal" href="#mdl1-@item.ID" onclick="getItems(this)" data-lookupID="@item.LookupID">@item.NoRecords</a>
+
+                                                    <div id="mdl1-@item.ID" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    @*<h4 class="modal-title">Items</h4>*@
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" aria-hidden="true"><i class="fas fa-times"></i></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="text-left">
+                                                                        <h4 class="header-title">Choice List Items</h4>
+                                                                        <p>Below is list of items for the @item.ListName choice list.</p>
+                                                                    </div>
+                                                                    <table class="table table-bordered" id="tbl1-@item.LookupID">
+                                                                        <thead class="table-info">
+                                                                            <tr>
+                                                                                <th>#</th>
+                                                                                <th>Value</th>
+                                                                                <th>Display Text</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody></tbody>
+                                                                    </table>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-danger waves-effect text-left" data-dismiss="modal">Close</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </td>
+                                            <td align="center">
+                                                <a data-toggle="modal" href="#mdl2-@item.ID" onclick="getForms(this)" data-lookupID="@item.LookupID"><i class="fas fa-clipboard-list"></i></a>
+
+                                                <div id="mdl2-@item.ID" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h4 class="modal-title">Add Choice List</h4>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" aria-hidden="true"><i class="fas fa-times"></i></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="text-left">
+                                                                    <h4 class="header-title">Forms</h4>
+                                                                    <p>List of forms that utilize the @item.ListName list</p>
+                                                                </div>
+                                                                <table class="table table-bordered" id="tbl2-@item.LookupID">
+                                                                    <thead class="table-info">
+                                                                        <tr>
+                                                                            <th>#</th>
+                                                                            <th>Form Code</th>
+                                                                            <th>Form Name</th>
+                                                                            <th></th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody></tbody>
+                                                                </table>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-danger waves-effect text-left" data-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td align="center">
+                                                <div class="custom-control custom-switch">
+                                                    @if (item.InternalList == 0)
+                                                    {
+                                                        <input type="checkbox" class="custom-control-input" onchange=Checked(this) data-lookupID="@item.LookupID" id="chk-@item.ID" checked>
+                                                        <label class="custom-control-label" for="chk-@item.ID"></label>
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td align="center"><a href="~/ApplicationSetup/ChoiceListEdit/@item.LookupID" class="btn btn-info waves-effect waves-light">Edit</a></td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" align="center"><h3>No records to display.</h3></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script type="text/javascript">
+        function Checked(e) {
+            var model = {
+                lookupID: $(e).attr("data-lookupID")
+            };
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Content("~/")' + "ApplicationSetup/DeactivateLookup",
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            });
+        }
+
+        function getItems(e) {
+            var lookupID = $(e).attr("data-lookupID");
+            var url = '@Url.Content("~/")' + "ApplicationSetup/GetLookupListItems";
+
+            $.getJSON(url, { lookupID: lookupID }, function (data) {
+                $("#tbl1-" + lookupID + " tbody").html("");
+
+                for (var i = 0; i < data.length; i++) {
+                    var tr = $("<tr/>");
+
+                    tr.append("<td>" + (i + 1) + "</td>");
+                    tr.append("<td>" + data[i].KeyValue + "</td>");
+                    tr.append("<td>" + data[i].DisplayValue + "</td>");
+
+                    $("#tbl1-" + lookupID).append(tr);
+                }
+            });
+        }
+
+        function getForms(e) {
+            var lookupID = $(e).attr("data-lookupID");
+            var url = '@Url.Content("~/")' + "ApplicationSetup/GetLookupListForms";
+
+            $.getJSON(url, { lookupID: lookupID }, function (data) {
+                $("#tbl2-" + lookupID + " tbody").html("");
+
+                for (var i = 0; i < data.length; i++) {
+                    var tr = $("<tr/>");
+
+                    tr.append("<td>" + (i + 1) + "</td>");
+                    tr.append("<td>" + data[i].FormCode + "</td>");
+                    tr.append("<td>" + data[i].FormName + "</td>");
+                    tr.append("<td align='center'><a href='/ApplicationSetup/FormBuilder/" + data[i].FormID + "' class='btn btn-info waves-effect waves-light'>Edit</a></td>");
+
+                    $("#tbl2-" + lookupID).append(tr);
+                }
+            });
+        }
+
+        $("#myForm").on('submit', function (e) {
+            e.preventDefault();
+            var ok = $(this).valid();
+            if (ok) {
+                var model = {
+                    description: $("#listName").val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Content("~/")' + "ApplicationSetup/AddLookup",
+                    data: JSON.stringify(model),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                });
+                $("#mdlAdd").modal('hide');
+                location.reload();
+            }
+        });
+    </script>
+}

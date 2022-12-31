@@ -1,0 +1,11 @@
+﻿FormCode,QuestionNo,MultiSectionQuestion,QuestionOfficial,SectionName,SubSectionName,ChoiceText,FormLabel,MaxChars,IsSingleCheckbox,SortOrder,PageNo,MultiSectionName,MultiSectionNo
+FPO-0001,1,,Subtotal,Order Details,Footer,,Label1,20,,0,1,,
+FPO-0001,2,,Field1,Order Details,Footer,,Label2,,,10,1,,
+FPO-0001,3,,Shipping Fee,Order Details,Footer,"RadioList:LabelX1,$100|LabelX2,$200",,,,20,1,,
+FPO-0001,4,,Field3,Order Details,Footer,,Label4,,,30,1,,
+FPO-0001,5,,Field4,Order Details,Footer,,Label5,,,40,1,,
+FPO-0001,6,,Field5,Order Details,Footer,"MultiSelect:1,M1|2,M2|3,M3|4,M4",,,,50,1,,
+FPO-0001,7,,Field6,Order Details,Footer,,Label7,,,60,1,,
+FPO-0001,8,,Field8,Order Details,Footer,,Label8,,,70,1,,
+FPO-0001,9,,Field7,Order Details,Footer,,Label9,10,,80,1,,
+FPO-0001,10,,Check here if you are AWESOME!,Order Details,Footer,,Label10,,1,90,1,,

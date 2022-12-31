@@ -1,0 +1,123 @@
+﻿@using SharedAssemblies.Content.AppCode;
+@{
+    Layout = null;
+}
+
+<input type="hidden" id="modalWindowOpened" origHtml="" />
+<!-- Begin Please Wait Modal -->
+@{
+    var pleaseWaitModalClass = "modal";
+    if (!VisitorTracking.MobileDevice)
+    {
+        pleaseWaitModalClass += " fade";
+    }
+}
+<style type="text/css">
+    #pleaseWaitModalHeader {
+        background-color: #d0d0d0 !important;
+        padding: 16px 16px !important;
+        color: #FFF !important;
+        border-bottom: 1px solid #e0e0e0 !important;
+    }
+</style>
+@if (VisitorTracking.MobileDevice)
+{
+    <style type="text/css">
+        #pleaseWaitModalDialog {
+            width: 200px !important;
+            height: 350px !important;
+            margin-left: 70px !important;
+        }
+
+        #pleaseWaitModalContent {
+            /* 30% of window height */
+            height: 60% !important;
+            background-color: #fff !important;
+        }
+
+
+        #pleaseWaitModalBody {
+            padding-top: 20px !important;
+        }
+
+        #pleaseWaitModal
+        {
+            margin-top: 25% !important;
+        }
+    </style>
+}
+else
+{
+    <style type="text/css">
+        #pleaseWaitModalDialog {
+            width: 360px !important;
+            height: 350px !important;
+        }
+
+        #pleaseWaitModalContent {
+            /* 60% of window height */
+            height: 60% !important;
+            background-color: #fff !important;
+        }
+
+
+        #pleaseWaitModalBody {
+            padding-top: 20px !important;
+        }
+    </style>
+}
+
+<div id="pleaseWaitModal" class="@pleaseWaitModalClass" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" id="pleaseWaitModalDialog">
+
+        <!-- Modal content-->
+        <div class="modal-content" id="pleaseWaitModalContent">
+            <div class="modal-header" id="pleaseWaitModalHeader">
+                <h4 class="modal-title" id="pleaseWaitModalLabel"><i class="fa fa-spinner fa-spin" style="font-size:19px"></i> &nbsp;Please Wait</h4>
+            </div>
+            <div class="modal-body" id="pleaseWaitModalBody">
+                <span id="pleaseWaitBodyText">The browser is working on your request.</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".pleaseWait").click(function () {
+            showPleaseWaitModal();
+            setTimeout(function () {
+                var formId = $(document.activeElement).closest('form').attr('id');
+                $("#" + formId).validate();
+                var formValid = $("#" + formId).valid();
+                if (!formValid) {
+                    hidePleaseWaitModal();
+                }
+            }, 1000);
+        });
+    });
+
+    function hidePleaseWaitModal() {
+        setTimeout(function () {
+            if ($('#pleaseWaitModal').is(':visible')) {
+                //alert('modal is visible'); // --testcode--
+                $("#pleaseWaitModal").modal("toggle");
+            }
+        }, 500);
+
+        if ($('.disableSubmitBtn').length > 0) {
+            $('.disableSubmitBtn').each(function () {
+                $(this).find(':input[type=submit]').prop('disabled', false);
+            });
+        }
+    }
+
+    function showPleaseWaitModal(bodyText) {
+        bodyText = bodyText || "";
+        if (bodyText != "") {
+            $("#pleaseWaitBodyText").html(bodyText);
+        }
+        $("#pleaseWaitModal").modal("toggle");
+    }
+</script>

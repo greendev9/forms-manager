@@ -1,0 +1,47 @@
+﻿<div class="alert alert-success msgAlert" style="display: @(!String.IsNullOrEmpty(Request.QueryString["smsg"]) ? "block" : "none");">
+    <a href="#" class="close msgLink" data-dismiss="alert" aria-label="close">&times;</a>
+    @{
+        string smsg = !String.IsNullOrEmpty(Request.QueryString["smsg"]) ? Request.QueryString["smsg"] : String.Empty;
+        smsg = smsg.Replace("{br}", "<br />");
+        smsg = smsg.Replace("{h3}", "<h3>");
+        smsg = smsg.Replace("{/h3}", "</h3>");
+    }
+
+    @Html.Raw(smsg)
+</div>
+
+<div class="alert alert-danger msgAlert" style="display: @(!String.IsNullOrEmpty(Request.QueryString["dmsg"]) ? "block" : "none");">
+    <a href="#" class="close msgLink" data-dismiss="alert" aria-label="close">&times;</a>
+    @{
+        string dmsg = !String.IsNullOrEmpty(Request.QueryString["dmsg"]) ? Request.QueryString["dmsg"] : String.Empty;
+        dmsg = dmsg.Replace("{br}", "<br />");
+        dmsg = dmsg.Replace("{h3}", "<h3>");
+        dmsg = dmsg.Replace("{/h3}", "</h3>");
+    }
+
+    @Html.Raw(dmsg)
+</div>
+
+<div class="alert alert-warning msgAlert" style="display: @(!String.IsNullOrEmpty(Request.QueryString["wmsg"]) ? "block" : "none");">
+    <a href="#" class="close msgLink" data-dismiss="alert" aria-label="close">&times;</a>
+    @{
+        string wmsg = !String.IsNullOrEmpty(Request.QueryString["wmsg"]) ? Request.QueryString["wmsg"] : String.Empty;
+        wmsg = wmsg.Replace("{br}", "<br />");
+        wmsg = wmsg.Replace("{h3}", "<h3>");
+        wmsg = wmsg.Replace("{/h3}", "</h3>");
+    }
+
+    @Html.Raw(wmsg)
+</div>
+
+<div class="alert alert-info msgAlert" style="display: @(!String.IsNullOrEmpty(Request.QueryString["imsg"]) ? "block" : "none");">
+    <a href="#" class="close msgLink" data-dismiss="alert" aria-label="close">&times;</a>
+    @{
+        string imsg = !String.IsNullOrEmpty(Request.QueryString["imsg"]) ? Request.QueryString["imsg"] : String.Empty;
+        imsg = imsg.Replace("{br}", "<br />");
+        imsg = imsg.Replace("{h3}", "<h3>");
+        imsg = imsg.Replace("{/h3}", "</h3>");
+    }
+
+    @Html.Raw(imsg)
+</div>

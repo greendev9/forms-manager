@@ -1,0 +1,78 @@
+﻿FormCode,QuestionNo,MultiSectionQuestion,QuestionOfficial,SectionName,SubSectionName,ChoiceText,FormLabel,MaxChars,IsSingleCheckbox,SortOrder,PageNo,MultiSectionName,MultiSectionNo
+EPO-0001,,,PO Date,Order Header,PO Info,,,,,5,1,,
+EPO-0001,,,PO No,Order Header,PO Info,,,,,7,1,,
+EPO-0001,,,Company Name,Order Header,Company,,,,,10,1,,
+EPO-0001,,,Street Address,Order Header,Company,,,,,20,1,,
+EPO-0001,,,"City, St Zip",Order Header,Company,,,,,30,1,,
+EPO-0001,,,Phone,Order Header,Company,,,,,40,1,,
+EPO-0001,,,Fax,Order Header,Company,,,,,50,1,,
+EPO-0001,,,Website,Order Header,Company,,,,,60,1,,
+EPO-0001,,,Vendor Company Name,Order Header,Vendor,,,,,70,1,,
+EPO-0001,,,Vendor Contact Name or Department,Order Header,Vendor,,,,,80,1,,
+EPO-0001,,,Vendor Street Address,Order Header,Vendor,,,,,90,1,,
+EPO-0001,,,"Vendor City, St Zip",Order Header,Vendor,,,,,100,1,,
+EPO-0001,,,Vendor Phone,Order Header,Vendor,,,,,110,1,,
+EPO-0001,,,Vendor Fax,Order Header,Vendor,,,,,120,1,,
+EPO-0001,,,Ship To Contact Name,Order Details,Shipping/Delivery,,,,,130,1,,
+EPO-0001,,,Ship To Company Name,Order Details,Shipping/Delivery,,,,,140,1,,
+EPO-0001,,,Ship To Street Address,Order Details,Shipping/Delivery,,,,,150,1,,
+EPO-0001,,,"Ship To City, St Zip",Order Details,Shipping/Delivery,,,,,160,1,,
+EPO-0001,,,Ship To Phone,Order Details,Shipping/Delivery,,,,,170,1,,
+EPO-0001,,,Shipping Terms,Order Details,Shipping/Delivery,"ShippingTerms:DDP,Point of Destination|EXW,Point of Origin|FOB,FOB|CIF,CIF",,,,180,1,,
+EPO-0001,,,Shipping Method,Order Details,Shipping/Delivery,"ShippingMethods:UPS,UPS|FedEx,FedEx|DHL,DHL",,,,190,1,,
+EPO-0001,,,Delivery Date,Order Details,Shipping/Delivery,,,,,200,1,,
+EPO-0001,,Enter line item details:,Item No,Order Details,Line Items,,,,,210,1,Line Item,1
+EPO-0001,,,Item Description,Order Details,Line Items,,,,,220,1,Line Item,1
+EPO-0001,,,Item Qty,Order Details,Line Items,,,,,230,1,Line Item,1
+EPO-0001,,,Item Price,Order Details,Line Items,,,,,240,1,Line Item,1
+EPO-0001,,,Item Total,Order Details,Line Items,,,,,250,1,Line Item,1
+EPO-0001,,,Item No,Order Details,Line Items,,,,,260,1,Line Item,2
+EPO-0001,,,Item Description,Order Details,Line Items,,,,,270,1,Line Item,2
+EPO-0001,,,Item Qty,Order Details,Line Items,,,,,280,1,Line Item,2
+EPO-0001,,,Item Price,Order Details,Line Items,,,,,290,1,Line Item,2
+EPO-0001,,,Item Total,Order Details,Line Items,,,,,300,1,Line Item,2
+EPO-0001,,,Item No,Order Details,Line Items,,,,,310,1,Line Item,3
+EPO-0001,,,Item Description,Order Details,Line Items,,,,,320,1,Line Item,3
+EPO-0001,,,Item Qty,Order Details,Line Items,,,,,330,1,Line Item,3
+EPO-0001,,,Item Price,Order Details,Line Items,,,,,340,1,Line Item,3
+EPO-0001,,,Item Total,Order Details,Line Items,,,,,350,1,Line Item,3
+EPO-0001,,,Item No,Order Details,Line Items,,,,,360,1,Line Item,4
+EPO-0001,,,Item Description,Order Details,Line Items,,,,,370,1,Line Item,4
+EPO-0001,,,Item Qty,Order Details,Line Items,,,,,380,1,Line Item,4
+EPO-0001,,,Item Price,Order Details,Line Items,,,,,390,1,Line Item,4
+EPO-0001,,,Item Total,Order Details,Line Items,,,,,400,1,Line Item,4
+EPO-0001,,,Item No,Order Details,Line Items,,,,,410,1,Line Item,5
+EPO-0001,,,Item Description,Order Details,Line Items,,,,,420,1,Line Item,5
+EPO-0001,,,Item Qty,Order Details,Line Items,,,,,430,1,Line Item,5
+EPO-0001,,,Item Price,Order Details,Line Items,,,,,440,1,Line Item,5
+EPO-0001,,,Item Total,Order Details,Line Items,,,,,450,1,Line Item,5
+EPO-0001,,,Item No,Order Details,Line Items,,,,,460,1,Line Item,6
+EPO-0001,,,Item Description,Order Details,Line Items,,,,,470,1,Line Item,6
+EPO-0001,,,Item Qty,Order Details,Line Items,,,,,480,1,Line Item,6
+EPO-0001,,,Item Price,Order Details,Line Items,,,,,490,1,Line Item,6
+EPO-0001,,,Item Total,Order Details,Line Items,,,,,500,1,Line Item,6
+EPO-0001,,,Item No,Order Details,Line Items,,,,,510,1,Line Item,7
+EPO-0001,,,Item Description,Order Details,Line Items,,,,,520,1,Line Item,7
+EPO-0001,,,Item Qty,Order Details,Line Items,,,,,530,1,Line Item,7
+EPO-0001,,,Item Price,Order Details,Line Items,,,,,540,1,Line Item,7
+EPO-0001,,,Item Total,Order Details,Line Items,,,,,550,1,Line Item,7
+EPO-0001,,,Item No,Order Details,Line Items,,,,,560,1,Line Item,8
+EPO-0001,,,Item Description,Order Details,Line Items,,,,,570,1,Line Item,8
+EPO-0001,,,Item Qty,Order Details,Line Items,,,,,580,1,Line Item,8
+EPO-0001,,,Item Price,Order Details,Line Items,,,,,590,1,Line Item,8
+EPO-0001,,,Item Total,Order Details,Line Items,,,,,600,1,Line Item,8
+EPO-0001,,,Item No,Order Details,Line Items,,,,,610,1,Line Item,9
+EPO-0001,,,Item Description,Order Details,Line Items,,,,,620,1,Line Item,9
+EPO-0001,,,Item Qty,Order Details,Line Items,,,,,630,1,Line Item,9
+EPO-0001,,,Item Price,Order Details,Line Items,,,,,640,1,Line Item,9
+EPO-0001,,,Item Total,Order Details,Line Items,,,,,650,1,Line Item,9
+EPO-0001,,,Item No,Order Details,Line Items,,,,,660,1,Line Item,10
+EPO-0001,,,Item Description,Order Details,Line Items,,,,,670,1,Line Item,10
+EPO-0001,,,Item Qty,Order Details,Line Items,,,,,680,1,Line Item,10
+EPO-0001,,,Item Price,Order Details,Line Items,,,,,690,1,Line Item,10
+EPO-0001,,,Item Total,Order Details,Line Items,,,,,700,1,Line Item,10
+EPO-0001,,,Comments or Special Instructions,Order Details,Footer,,,,,5060,1,,
+EPO-0001,,,Subtotal,Order Details,Footer,,,,,5070,1,,
+EPO-0001,,,Tax,Order Details,Footer,,,,,5080,1,,
+EPO-0001,,,Shipping Fee,Order Details,Footer,,,,,5090,1,,
+EPO-0001,,,PO Total,Order Details,Footer,,,,,6000,1,,

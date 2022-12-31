@@ -1,0 +1,78 @@
+﻿FormCode,QuestionNo,MultiSectionQuestion,QuestionOfficial,SectionName,SubSectionName,ChoiceText,FormLabel,MaxChars,IsSingleCheckbox,SortOrder,PageNo,MultiSectionName,MultiSectionNo
+FPO-0001,,,PO Date,Order Header,PO Info,,Text1,,,5,1,,
+FPO-0001,,,PO No,Order Header,PO Info,,Text2,,,7,20,,
+FPO-0001,,,Company Name,Order Header,Company,,Text22,,,10,1,,
+FPO-0001,,,Street Address,Order Header,Company,,Text3,,,20,1,,
+FPO-0001,,,"City, St Zip",Order Header,Company,,Text4,,,30,1,,
+FPO-0001,,,Phone,Order Header,Company,,Text5,,,40,1,,
+FPO-0001,,,Fax,Order Header,Company,,Text6,,,50,1,,
+FPO-0001,,,Website,Order Header,Company,,Text7,,,60,1,,
+FPO-0001,,,Vendor Company Name,Order Header,Vendor,,Text8,,,70,1,,
+FPO-0001,,,Vendor Contact Name or Department,Order Header,Vendor,,Text9,,,80,1,,
+FPO-0001,,,Vendor Street Address,Order Header,Vendor,,Text10,,,90,1,,
+FPO-0001,,,"Vendor City, St Zip",Order Header,Vendor,,Text11,,,100,1,,
+FPO-0001,,,Vendor Phone,Order Header,Vendor,,Text12,,,110,1,,
+FPO-0001,,,Vendor Fax,Order Header,Vendor,,Text13,,,120,1,,
+FPO-0001,,,Ship To Contact Name,Order Details,Shipping/Delivery,,Text14,,,130,1,,
+FPO-0001,,,Ship To Company Name,Order Details,Shipping/Delivery,,Text15,,,140,1,,
+FPO-0001,,,Ship To Street Address,Order Details,Shipping/Delivery,,Text16,,,150,1,,
+FPO-0001,,,"Ship To City, St Zip",Order Details,Shipping/Delivery,,Text17,,,160,1,,
+FPO-0001,,,Ship To Phone,Order Details,Shipping/Delivery,,Text18,,,170,1,,
+FPO-0001,,,Shipping Terms,Order Details,Shipping/Delivery,"ShippingTerms:DDP,Point of Destination|EXW,Point of Origin|FOB,FOB|CIF,CIF",Text19,,,180,1,,
+FPO-0001,,,Shipping Method,Order Details,Shipping/Delivery,"ShippingMethods:UPS,UPS|FedEx,FedEx|DHL,DHL",Text20,,,190,1,,
+FPO-0001,,,Delivery Date,Order Details,Shipping/Delivery,,Text21,,,200,1,,
+FPO-0001,,Enter line item details:,Item No,Order Details,Line Items,,Text23,,,210,1,Line Item,1
+FPO-0001,,,Item Description,Order Details,Line Items,,Text24,,,220,1,Line Item,1
+FPO-0001,,,Item Qty,Order Details,Line Items,,Text25,,,230,1,Line Item,1
+FPO-0001,,,Item Price,Order Details,Line Items,,Text26,,,240,1,Line Item,1
+FPO-0001,,,Item Total,Order Details,Line Items,,Text27,,,250,1,Line Item,1
+FPO-0001,,,Item No,Order Details,Line Items,,Text28,,,260,1,Line Item,2
+FPO-0001,,,Item Description,Order Details,Line Items,,Text29,,,270,1,Line Item,2
+FPO-0001,,,Item Qty,Order Details,Line Items,,Text30,,,280,1,Line Item,2
+FPO-0001,,,Item Price,Order Details,Line Items,,Text31,,,290,1,Line Item,2
+FPO-0001,,,Item Total,Order Details,Line Items,,Text32,,,300,1,Line Item,2
+FPO-0001,,,Item No,Order Details,Line Items,,Text33,,,310,1,Line Item,3
+FPO-0001,,,Item Description,Order Details,Line Items,,Text34,,,320,1,Line Item,3
+FPO-0001,,,Item Qty,Order Details,Line Items,,Text35,,,330,1,Line Item,3
+FPO-0001,,,Item Price,Order Details,Line Items,,Text36,,,340,1,Line Item,3
+FPO-0001,,,Item Total,Order Details,Line Items,,Text37,,,350,1,Line Item,3
+FPO-0001,,,Item No,Order Details,Line Items,,Text38,,,360,1,Line Item,4
+FPO-0001,,,Item Description,Order Details,Line Items,,Text39,,,370,1,Line Item,4
+FPO-0001,,,Item Qty,Order Details,Line Items,,Text40,,,380,1,Line Item,4
+FPO-0001,,,Item Price,Order Details,Line Items,,Text41,,,390,1,Line Item,4
+FPO-0001,,,Item Total,Order Details,Line Items,,Text42,,,400,1,Line Item,4
+FPO-0001,,,Item No,Order Details,Line Items,,Text43,,,410,1,Line Item,5
+FPO-0001,,,Item Description,Order Details,Line Items,,Text44,,,420,1,Line Item,5
+FPO-0001,,,Item Qty,Order Details,Line Items,,Text45,,,430,1,Line Item,5
+FPO-0001,,,Item Price,Order Details,Line Items,,Text46,,,440,4,Line Item,5
+FPO-0001,,,Item Total,Order Details,Line Items,,Text47,,,450,1,Line Item,5
+FPO-0001,,,Item No,Order Details,Line Items,,Text48,,,460,1,Line Item,6
+FPO-0001,,,Item Description,Order Details,Line Items,,Text49,,,470,1,Line Item,6
+FPO-0001,,,Item Qty,Order Details,Line Items,,Text55,,,480,1,Line Item,6
+FPO-0001,,,Item Price,Order Details,Line Items,,Text56,,,490,1,Line Item,6
+FPO-0001,,,Item Total,Order Details,Line Items,,Text57,,,500,1,Line Item,6
+FPO-0001,,,Item No,Order Details,Line Items,,Text53,,,510,1,Line Item,7
+FPO-0001,,,Item Description,Order Details,Line Items,,Text54,,,520,1,Line Item,7
+FPO-0001,,,Item Qty,Order Details,Line Items,,Text50,,,530,1,Line Item,7
+FPO-0001,,,Item Price,Order Details,Line Items,,Text51,,,540,1,Line Item,7
+FPO-0001,,,Item Total,Order Details,Line Items,,Text52,,,550,1,Line Item,7
+FPO-0001,,,Item No,Order Details,Line Items,,Text58,,,560,1,Line Item,8
+FPO-0001,,,Item Description,Order Details,Line Items,,Text64,,,570,1,Line Item,8
+FPO-0001,,,Item Qty,Order Details,Line Items,,Text65,,,580,1,Line Item,8
+FPO-0001,,,Item Price,Order Details,Line Items,,Text66,,,590,1,Line Item,8
+FPO-0001,,,Item Total,Order Details,Line Items,,Text67,,,600,1,Line Item,8
+FPO-0001,,,Item No,Order Details,Line Items,,Text63,,,610,1,Line Item,9
+FPO-0001,,,Item Description,Order Details,Line Items,,Text59,,,620,1,Line Item,9
+FPO-0001,,,Item Qty,Order Details,Line Items,,Text60,,,630,1,Line Item,9
+FPO-0001,,,Item Price,Order Details,Line Items,,Text61,,,640,1,Line Item,9
+FPO-0001,,,Item Total,Order Details,Line Items,,Text62,,,650,1,Line Item,9
+FPO-0001,,,Item No,Order Details,Line Items,,Text68,,,660,1,Line Item,10
+FPO-0001,,,Item Description,Order Details,Line Items,,Text69,,,670,1,Line Item,10
+FPO-0001,,,Item Qty,Order Details,Line Items,,Text70,,,680,1,Line Item,10
+FPO-0001,,,Item Price,Order Details,Line Items,,Text71,,,690,1,Line Item,10
+FPO-0001,,,Item Total,Order Details,Line Items,,Text72,,,700,1,Line Item,10
+FPO-0001,,,Comments or Special Instructions,Order Details,Footer,,Text77,,,5060,1,,
+FPO-0001,,,Subtotal,Order Details,Footer,,Text73,,,5070,1,,
+FPO-0001,,,Tax,Order Details,Footer,,Text76,,,5080,1,,
+FPO-0001,,,Shipping Fee,Order Details,Footer,,Text74,,,5090,1,,
+FPO-0001,,,PO Total,Order Details,Footer,,Text75,,,6000,1,,

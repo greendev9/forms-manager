@@ -1,0 +1,91 @@
+﻿@model IEnumerable<SharedAssemblies.Models.CustomerGlossaryItemsGet>
+
+@{
+    ViewBag.Title = "Glossary Manager";
+    ViewBag.Page = "Glossary Manager";
+
+    string saveUrl = "SaveForm?filter=" + @ViewData["CurrentFilter"];
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <h4 class="header-title col-5">GLOSSARY MANAGER</h4>
+                        <div class="col-7 align-self-center">
+                            <div class="d-flex justify-content-end align-items-center">
+                                <div class="mr-2">
+                                    <a href="@saveUrl" class="btn btn-info waves-effect waves-light">Save Form <i class="fas fa-save"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form asp-action="CustomerGlossary" method="get">
+                        <div class="form-group row">
+                            <span class="col-md-3">
+                                <input type="text" name="SearchString" placeholder="Search" class="form-control" value="@ViewData["CurrentFilter"]" />
+                            </span>
+                            <span><input type="submit" value="Search" class="btn btn-primary" /></span>
+                        </div>
+                    </form>
+                    @if (Model.Count() > 0)
+                    {
+                        <div class="table-responsive">
+                            <table id="myTable" class="table table-bordered">
+                                <thead class="table-info">
+                                    <tr>
+                                        <th>Lookup Key</th>
+                                        <th>Description</th>
+                                        <th>Glossary Text</th>
+                                        <th>Tokens</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td style="display:none;">@item.ID</td>
+                                            <td>
+                                                <label id="lblLookupKey">@item.LookupKey</label>
+                                                @if (item.Required == 1)
+                                                {<label class="text-danger">*</label>}
+                                            </td>
+                                            <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                                            <td><textarea id="txtValueWithDefault" class="form-control" style="width: 250px; height: 100px">@Html.DisplayFor(modelItem => item.ValueWithDefault)</textarea></td>
+                                            <td>@Html.DisplayFor(modelItem => item.TokensAvailable)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else { <h3>No records to display.</h3>}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $("#myTable").on('change', '#txtValueWithDefault', function () {
+            var currentRow = $(this).closest("tr");
+
+            var model = {
+                id: currentRow.find("td:eq(0)").text(), // ID
+                lookupKey: currentRow.find("#lblLookupKey").text(), // LookupKey
+                valueWithDefault: currentRow.find("#txtValueWithDefault").val() // ValueWithDefault
+            };
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Content("~/")' + "CustomerSetup/AddGlossaryText",
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            });
+        });
+    </script>
+}

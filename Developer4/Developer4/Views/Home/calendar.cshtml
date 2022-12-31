@@ -1,0 +1,804 @@
+﻿@model SharedAssemblies.Models.EventGet
+
+@{
+    ViewBag.Title = "Calendar";
+    ViewBag.Page = ViewBag.Title;
+
+    var bookingEventId = ViewBag.BookingEventID != null ? ViewBag.BookingEventID : "";
+}
+
+<style type="text/css">
+    .fc-title {
+        cursor: pointer !important;
+    }
+
+    .external-event {
+        cursor: text !important;
+    }
+
+    #calendar .fc-today {
+        background: #ffffcc !important;
+    }
+
+    .calendarPreloader {
+        text-align: center !important;
+        margin-top: 5% !important;
+        color: #777 !important;
+        font-size: 17px !important;
+    }
+
+    .fc-content {
+        cursor: pointer !important;
+    }
+
+    .fc-mouse-allow-resize {
+        cursor: pointer !important;
+    }
+
+    .fc-day-grid-event {
+        cursor: pointer !important;
+    }
+
+    .timeslotsPreloader {
+        margin-top: 20px;
+        text-align: center;
+    }
+</style>
+
+<div class="container-fluid" id="mainBody">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div id="external-events" class="m-t-20">
+                                <br>
+                                <div class="external-event">
+                                    <h5>@Model.EventName</h5>
+                                    <p class="text-muted"><i class="far fa-clock"></i> &nbsp; @Model.Duration minutes</p>
+                                    <p class="text-muted"><i class="fas fa-map-marker-alt"></i> &nbsp; @Model.Location</p>
+                                    <p class="text-muted">
+                                        <i class="mdi mdi-text-subject" style="float: left !important;"></i> <span style="display: flex; padding-left: 7px !important;">@Model.Description</span>
+                                    </p>
+                                </div>
+                            </div>
+                            @if (ViewBag.ShowBookedEvents != true)
+                            {
+                                <div class="mt-5 d-none d-xl-block">
+                                    <div class="form-group">
+                                        <label for="TimeZone" class="col-form-label">Select Your Timezone:</label>
+                                        <select id="TimeZone" onchange="timezoneChange(this)" class="form-control" name="TimeZone">
+                                            <option value="0" selected disabled>No selection</option>
+                                            @foreach (var item in ViewBag.TimeZones)
+                                            {
+                                                <option value="@item.Value">@item.Text</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="m-t-20">
+                                    <br>
+                                    <div class="external-event">
+                                        <p class="text-muted">
+                                            <i class="mdi mdi-information-outline" style="float: left !important;"></i>
+                                            <span style="display: flex; padding-left: 7px !important;">
+                                                To reserve your time, select your timezone, then click on the desired calendar date.
+                                            </span>
+                                        </p>
+                                        <p class="text-muted" id="calendar-timezone-alert" style="display: none;">
+                                            <i class="mdi mdi-clock-alert-outline" style="float: left !important; color: #800000;"></i>
+                                            <span style="display: flex; padding-left: 7px !important; color: #800000;">
+                                                Your timezone is different from our timezone. Depending on your location,
+                                                the available times shown may be outside of your normal business hours, but we will be happy meet with you
+                                                during the timeframes available.
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="mt-4 mt-lg-0">
+                                <div id="calendar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="event-details" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h5 class="header-title" id="modal-title">Event Details</h5>
+                        </div>
+                        <div class="modal-body p-4">
+                            <h5 id="event-name"></h5><br />
+                            <p id="bookingConfirmPuMsg" style="font-size: 15px !important;"><span style='color: #800000; font-weight: bold; font-size: 18px !important;'>You're booking was successful!</span><br />To reschedule or cancel click <a href="#">here</a>.</p><br />
+                            <p id="event-duration" class="text-muted"></p>
+                            <p id="event-location" class="text-muted"></p>
+                            <p id="event-description" class="text-muted"></p>
+
+                            <div class="card">
+                                <div class="card-body">
+                                    <table class="table table-borderless">
+                                        <tbody>
+                                            <tr>
+                                                <th>Attendee Name:</th>
+                                                <td id="event-atd-name"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Attendee Email:</th>
+                                                <td id="event-atd-email"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Attendee Cell Phone #:</th>
+                                                <td id="event-atd-phone"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Organizer:</th>
+                                                <td id="event-atd-organizer"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Date:</th>
+                                                <td id="event-atd-date"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger waves-effect text-left" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Add New Event MODAL -->
+            <div class="modal fade" id="new-event-modal" tabindex="-1">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h5 class="header-title" id="be-modal-title">Book a @Model.EventName</h5>
+                        </div>
+                        <div class="modal-body p-4">
+                            <div class="card">
+                                <div class="card-body" id="time-slots">
+                                    <h4 class="header-title">Available Time Slots</h4>
+                                    <p>
+                                        If there are multiple organizers available, you can click on their name in the left menu to view their available times. Then click on the available time desired
+                                        on the right. <span id="be-TimezoneInfo" style="color: #800000; display: none;">
+                                            Your timezone is different from our timezone. Depending on your location,
+                                            the available times shown may be outside of your normal business hours, but we will be happy meet with during the timeframes available.
+                                        </span><br />
+                                    </p>
+                                    <div class="tabs-vertical-env">
+                                        <div class="row">
+                                            <div class="col-sm-0" id="dvOrganizerCol1">
+                                                <div class="nav flex-column nav-pills tabs-vertical" role="tablist" aria-orientation="vertical" id="myTab"></div>
+                                            </div>
+                                            <div class="col-sm-12" id="dvOrganizerCol2">
+                                                <div class="dvPleaseWaitTable" id="divTablePleaseWait">
+                                                    <div class="timeslotsPreloader"><div><i class="dripicons-calendar" id="ts-preloader-icon" style="font-size: 40px;"></i><br /></div><span id="loadingCalMsg"><i class="fa fa-spinner fa-spin" style="font-size:15px; color: #777;"></i> &nbsp;Loading available times...</span></div>'
+                                                </div>
+                                                <div class="tab-content pt-0" id="tabContent"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-6"></div>
+                                        <div class="col-6 text-right">
+                                            <button type="button" class="btn btn-light mr-1" data-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body" id="myForm">
+                                    <!-- end row -->
+                                    <form class="needs-validation" id="form-event" novalidate>
+                                        <input id="organizerClientId" type="hidden" />
+                                        <input id="eventDate" type="hidden" />
+                                        <input id="startTime" type="hidden" />
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <p style="color: #800000;">Please fill in all required fields below.</p>
+                                                <div class="form-group">
+                                                    <label class="control-label">Organizer</label>
+                                                    <div id="be-MeetingWith" class="text-muted">Cherie Mugo</div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="control-label">Date</label>
+                                                    <div id="be-MeetingDate" class="text-muted">Monday, October 12, 2022</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label class="control-label">First Name</label>
+                                                    <input class="form-control be-FormField" placeholder="Insert First Name" type="text" id="firstName" name="firstName" required />
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label class="control-label">Last Name</label>
+                                                    <input class="form-control be-FormField" placeholder="Insert Last Name" type="text" id="lastName" name="lastName" required />
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label class="control-label">E-mail</label>
+                                                    <input class="form-control be-FormField" placeholder="Insert E-mail" type="email" id="email" name="email" required />
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label class="control-label">Confirm E-mail</label>
+                                                    <input class="form-control be-FormField" placeholder="Insert E-mail" type="email" id="confirmEmail" name="confirmEmail" required />
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label class="control-label">Cell Phone #</label>
+                                                    <input class="form-control be-FormField" placeholder="Insert Cell Phone" type="text" id="phone" name="phone" required />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-6"></div>
+                                            <div class="col-6 text-right">
+                                                <button type="button" class="btn btn-light mr-1" data-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-success" id="btn-save-event">Save</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Info Alert Modal -->
+<div id="info-alert-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body p-4">
+                <div class="text-center">
+                    <i class="dripicons-information h1 text-info"></i>
+                    <h4 class="mt-2">Heads up!</h4>
+                    <p class="mt-3" id="msg-alert"></p>
+                    <button type="button" class="btn btn-info my-2" data-dismiss="modal">Continue</button>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- Plugin css -->
+<link href="~/assets/libs/xfullcalendar/core/main.min.css" rel="stylesheet" type="text/css" />
+<link href="~/assets/libs/xfullcalendar/daygrid/main.min.css" rel="stylesheet" type="text/css" />
+<link href="~/assets/libs/xfullcalendar/bootstrap/main.min.css" rel="stylesheet" type="text/css" />
+<link href="~/assets/libs/xfullcalendar/timegrid/main.min.css" rel="stylesheet" type="text/css" />
+<link href="~/assets/libs/xfullcalendar/list/main.min.css" rel="stylesheet" type="text/css" />
+
+@section Scripts {
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+    <link href="~/assets/libs/jquery-toast-plugin/jquery.toast.min.css" rel="stylesheet" />
+    <script src="~/assets/libs/jquery-toast-plugin/jquery.toast.min.js"></script>
+
+    <!-- plugin js -->
+    <script src="~/assets/libs/moment/min/moment.min.js"></script>
+    <script src="~/assets/libs/xfullcalendar/core/main.min.js"></script>
+    <script src="~/assets/libs/xfullcalendar/bootstrap/main.min.js"></script>
+    <script src="~/assets/libs/xfullcalendar/daygrid/main.min.js"></script>
+    <script src="~/assets/libs/xfullcalendar/timegrid/main.min.js"></script>
+    <script src="~/assets/libs/xfullcalendar/list/main.min.js"></script>
+    <script src="~/assets/libs/xfullcalendar/interaction/main.min.js"></script>
+
+    <script>
+        var customerTZ = '@ViewBag.DefaultTimeZone';
+        var currentDomain = '@Url.Content("~")';
+        var calendar;
+        var pageLoad;
+
+        function timezoneChange(obj) {
+            $("#calendar-timezone-alert").hide();
+            if ($(obj).val() != customerTZ) {
+                $("#calendar-timezone-alert").show();
+            }
+        }
+
+        function hidePreloader(err) {
+            err = err || false;
+            if (err) {
+                $("#preloaderIcon").attr("class", "mdi mdi-alert-decagram-outline");
+                $(".calendarPreloader").show();
+                $("#loadingCalMsg").html("Error loading calendar.<br />Try refreshing the page.");
+            }
+            else {
+                $("#preloaderIcon").attr("class", "dripicons-calendar");
+                $("#loadingCalMsg").html("Loading calendar...");
+                $(".calendarPreloader").hide();
+            }
+        }
+
+        $(document).ready(function () {
+            $("#calendar").html('<div class="calendarPreloader"><div><i class="dripicons-calendar" id="preloaderIcon" style="font-size: 40px;"></i><br /></div><span id="loadingCalMsg"><i class="fa fa-spinner fa-spin" style="font-size:15px; color: #777;"></i> &nbsp;Loading calendar...</span></div>');
+
+            if ($("#tmpBEID").val() != "") {
+                showBookingConfirmation();
+            }
+
+            $("#mainBody").on("click", ".organizerTab", function () {
+                $("#hdnBeMeetingWith").val($(this).attr("organizerName"));
+            });
+
+            pageLoad = true;
+            LoadCalendar();
+
+            $("#form-event").validate({
+                errorClass: "field-validation-error text-danger",
+                errorElement: "span",
+                rules: {
+                    confirmEmail: {
+                        equalTo: "#email"
+                    }
+                },
+                messages: {
+                    confirmEmail: {
+                        equalTo: "Please enter matching e-mails."
+                    }
+                }
+            });
+        });
+
+        function LoadCalendar() {
+            var calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                plugins: ['bootstrap', 'interaction', 'dayGrid'],
+                //slotDuration: "00:15:00", minTime: "08:00:00", maxTime: "19:00:00",
+                themeSystem: "bootstrap",
+                bootstrapFontAwesome: !1,
+                buttonText: { today: "Today", month: "Month", prev: "Prev", next: "Next" },
+                header: { left: 'prev,next today', center: 'title', right: 'dayGridMonth' },
+                navLinks: false,
+                eventLimit: true,
+                displayEventTime: false,
+                eventClick: function (e) { onEventClick(e) },
+                dateClick: function (e) { onDateClick(e) },
+                defaultDate: '@ViewBag.CustomerCurrentMonthStart',
+                eventRender: function (info) {
+                    $(info.el).tooltip({ title: info.event.title });
+                },
+                header: {
+                    left: 'prev,next, today',
+                    center: 'title',
+                    right: ''
+                },
+                events: function (e, callback) {
+                    if (!pageLoad) {
+                        showPleaseWaitModal();
+                    }
+                    var eventData = [];
+                    var startDate = e.start;
+                    var endDate = e.end;                    
+
+                    if (pageLoad) {
+                        startDate = '@ViewBag.CustomerCurrentMonthStart';
+                        endDate = '@ViewBag.CustomerCurrentMonthEnd';
+                    }
+
+                    let model = {
+                        isAdministrator: '@ViewBag.ShowBookedEvents',
+                        start: startDate,
+                        end: endDate
+                    };
+
+                    //console.log("pageLoad: " + pageLoad + "\ne.start: " + e.start + "\ne.end: " + e.end + "\nstartDate: " + startDate + "\nendDate: " + endDate + "\nmodel: " + JSON.stringify(model, undefined, 4));
+
+                    $.ajax({
+                        type: "POST",
+                        url: currentDomain + "Home/GetCalendarData",
+                        data: JSON.stringify(model),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            if (response.success) {
+                                $.each(response.data, function (i, data) {
+                                    eventData.push({
+                                        id: data.id,
+                                        title: data.title,
+                                        start: data.start,
+                                        end: data.end
+                                    });
+                                });
+
+                                hidePreloader();
+                                hidePleaseWaitModal();
+                            }
+                            else {
+                                hidePreloader(true);
+                                hidePleaseWaitModal();
+                                formilaeAlert('An error occurred. Please try again and contact the web aministrator if the issue persists.', '', false, true);
+                            }
+                            callback(eventData);
+                            calendar.render();
+                        },
+                        error: function () {
+                            hidePreloader(true);
+                            hidePleaseWaitModal();
+                            formilaeAlert('An error occurred. Please try again and contact the web aministrator if the issue persists.', '', false, true);
+                        }
+                    });
+                    pageLoad = false;
+                }
+            });
+        }
+
+        function reLoadCalendarData() {
+            if (submitSuccess && '@ViewBag.ShowBookedEvents' == "True") {
+                showPleaseWaitModal();
+                window.location.href = currentDomain + "home/calendar?eventID=@Model.ID&bId=" + $("#hdnNewBookingEID").val() + "&sd=" + $("#hdnMonthViewStartDte").val() + "&ed=" + $("#hdnMonthViewEndDte").val();
+            }
+        }
+
+        function showBookingConfirmation(e) {
+            e = e || undefined;
+            showPleaseWaitModal();
+            var selectedEvent;
+            var selectedEventId = "";
+            var showConfirmedMsg = false;
+
+            if (e !== undefined) {
+                selectedEvent = e.event;
+                selectedEventId = selectedEvent.id;
+            }
+
+            if ($("#tmpBEID").val() != "") {
+                selectedEventId = $("#tmpBEID").val();
+                showConfirmedMsg = true;
+                $("#tmpBEID").val("");
+            }
+
+            if (selectedEventId != "") {
+                let model = {
+                    id: selectedEventId
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: currentDomain + "Home/GetBookedEvent",
+                    data: JSON.stringify(model),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            $('#event-duration').html('<i class="far fa-clock"></i> &nbsp; ' + response.data.duration + ' minutes');
+                            $('#event-location').html('<i class="fas fa-map-marker-alt"></i> &nbsp; ' + response.data.location);
+                            $('#event-description').html('<i class="mdi mdi-text-subject" style="float: left !important;"></i> <span style="display: flex; padding-left: 7px !important;">' + response.data.description + '</span>');
+                            $('#event-atd-name').html(response.data.name);
+                            $('#event-atd-email').html(response.data.email);
+                            $('#event-atd-phone').html(response.data.phone);
+                            $('#event-atd-organizer').html(response.data.organizer);
+                            $('#event-atd-date').html(response.data.date);
+                            $('#event-name').text(response.data.eventName);
+
+                            $('#event-details').modal({ backdrop: "static" });
+
+                            if (showConfirmedMsg) {
+                                $("#bookingConfirmPuMsg").show();
+                            }
+                            else {
+                                $("#bookingConfirmPuMsg").hide();
+                            }
+
+                            hidePleaseWaitModal();
+                        }
+                        else {
+                            hidePleaseWaitModal();
+                            formilaeAlert('An error occurred. Please try again and contact the web aministrator if the issue persists.', '', false, true);
+                        }
+                    },
+                    error: function () {
+                        hidePleaseWaitModal();
+                        formilaeAlert('An error occurred. Please try again and contact the web aministrator if the issue persists.', '', false, true);
+                    }
+                });
+            }
+            
+        }
+
+        function onEventClick(e) {
+            showBookingConfirmation(e);
+        }
+
+        var organizerCount = 0;
+        function onDateClick(e) {
+            $("#dvOrganizerCol1").attr("class", "col-sm-0");
+            $("#dvOrganizerCol2").attr("class", "col-sm-12");
+
+            var customerCurrentDateStr = '@ViewBag.CustomerCurrentDateStr';  // The customer's current date in their timezone
+            var customerCurrentDate = getDateWithoutTimezone(customerCurrentDateStr);
+            let mf = customerCurrentDate.getMonth();
+            mf += 1;
+            let formattedDate = customerCurrentDate.getFullYear() + "-" + mf + "-" + customerCurrentDate.getDate();
+
+            //console.log("formattedDate: " + formattedDate);
+
+            var valid = true;
+            if (e.dateStr < formattedDate) {
+                $('#msg-alert').text("Unfortanetly, there are no available times on this day.");
+                $('#info-alert-modal').modal({ backdrop: "static" });
+                valid = false;
+                return;
+            }
+
+            var timeZone = null;
+            var isAdministrator = '@ViewBag.ShowBookedEvents';
+            if (isAdministrator == 'True') {
+                timeZone = '@ViewBag.DefaultTimeZone';
+            }
+            else {
+                timeZone = $('#TimeZone').find(":selected").val();
+                if (timeZone == 0) {
+                    $('#msg-alert').text("Please select your timezone first.");
+                    $('#info-alert-modal').modal({ backdrop: "static" });
+                    valid = false;
+                    return;
+                }
+            }
+
+            if (valid) {
+                showPleaseWaitModal();
+                $(".dvPleaseWaitTable").show();
+                let model = {
+                    eventId: '@Model.ID'
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: currentDomain + "Home/GetEventOrganizers",
+                    data: JSON.stringify(model),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            $("#myTab").html("");
+                            $("#tabContent").html("");
+                            organizerCount = response.data.length;
+                            for (var i = 0; i < response.data.length; i++) {
+                                if (i == 0) {
+                                    $("#hdnBeMeetingWith").val(response.data[i].FirstName + ' ' + response.data[i].LastName);
+                                }
+                                var a = $('<a style="display: none;" organizerName="' + response.data[i].FirstName + ' ' + response.data[i].LastName + '" class="nav-link organizerTab mb-1" id="v-tab-' + (i + 1) + '" data-toggle="pill" href="#tab-' + (i + 1) + '" role="tab" aria-controls="v-' + (i + 1) + '" aria-selected="false">' +
+                                    '<span class="d-inline-block ml-2">' + response.data[i].FirstName + ' ' + response.data[i].LastName + '</span></a>');
+                                $("#myTab").append(a);
+                                GetAvailableClientEvents((i + 1), response.data[i].ClientID, e.dateStr);
+                            }
+
+                            $("#be-TimezoneInfo").hide();
+                            if ($("#TimeZone").val() != customerTZ) {
+                                $("#be-TimezoneInfo").show();
+                            }
+
+                            $("#myTab a").first().addClass("active");
+                            $('#time-slots').show();
+                            $('#myForm').hide();
+                            $('#new-event-modal').modal({ backdrop: "static" });
+                            hidePleaseWaitModal();
+                        }
+                        else {
+                            hidePleaseWaitModal();
+                            formilaeAlert('An error occurred. Please try again and contact the web aministrator if the issue persists.', '', false, true);
+                        }
+                    },
+                    error: function () {
+                        hidePleaseWaitModal();
+                        formilaeAlert('An error occurred. Please try again and contact the web aministrator if the issue persists.', '', false, true);
+                    }
+                });
+            }
+        }
+
+        function hideTabContentPleaseWait() {
+            if (timeslotsLoaded == organizerCount) {
+                // reset
+                organizerCount = 0;  
+                timeslotsLoaded = 0;
+
+                $(".dvPleaseWaitTable").hide();
+                $(".tabContentDiv").show();
+
+                $("#dvOrganizerCol1").attr("class", "col-sm-3");
+                $("#dvOrganizerCol2").attr("class", "col-sm-9");
+
+                $(".organizerTab").show();
+            }
+        }
+
+        function getDateWithoutTimezone(dteStr) {
+            var dateStr = dteStr + 'T09:35:31.820Z';
+            var date = new Date(dateStr);
+            date = new Date(date.toISOString().slice(0, -1));
+
+            return date;
+        }
+
+        var timeslotsLoaded = 0;
+        function GetAvailableClientEvents(id, clientId, bookingDate) {
+            var timeZone = null;
+            var isAdministrator = '@ViewBag.ShowBookedEvents';
+            if (isAdministrator == 'True') {
+                timeZone = '@ViewBag.DefaultTimeZone';
+            }
+            else {
+                timeZone = $('#TimeZone').find(":selected").val();
+            }
+
+            //var popupHeaderDateStr = bookingDate + 'T09:35:31.820Z';
+            //var popupHeaderDate = new Date(popupHeaderDateStr);
+            //popupHeaderDate = new Date(popupHeaderDate.toISOString().slice(0, -1));
+            var popupHeaderDate = getDateWithoutTimezone(bookingDate);
+
+            let model = {
+                clientId: clientId,
+                eventId: '@Model.ID',
+                bookingDate: bookingDate,
+                userTimezoneOffset: timeZone
+            };
+
+            $.ajax({
+                type: "POST",
+                url: currentDomain + "Home/GetAvailableClientEvents",
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var div = $('<div style="display: none;" class="tab-pane fade tabContentDiv" id="tab-' + id + '" role="tabpanel" aria-labelledby="v-home-tab"></div>');
+                    $("#tabContent").append(div);
+
+                    let date = new Date(bookingDate);
+                    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                    let formattedDate = "<h5 id='be-BookingDate'>" + days[popupHeaderDate.getDay()] + ", " + months[popupHeaderDate.getMonth()] + " " + popupHeaderDate.getDate() + ", " + popupHeaderDate.getFullYear() + "</h5>";
+                    $("#tab-" + id).append(formattedDate);
+
+                    $("#hdnBeMeetingDate").val(days[popupHeaderDate.getDay()] + ", " + months[popupHeaderDate.getMonth()] + " " + popupHeaderDate.getDate() + ", " + popupHeaderDate.getFullYear());
+                    if (response.success) {
+                        $.each(response.data, function (i, data) {
+                            var button = $('<button type="button" dateDiff="' + data.DateDifference + '" data-starttime="' + data.StartTime + '" data-eventdate="' + bookingDate + '" class="btn border my-1 col" onclick="getForm(' + clientId + ',this)">' + data.StartDateTimeDisplay + '</button>')
+                            $("#tab-" + id).append(button);
+                        });
+                    }
+                    else {
+                        $("#tab-" + id).append('<p>No available times</p>');
+                    }
+
+                    $("#tab-1").addClass("active show");
+                    timeslotsLoaded++;
+                }
+            }).done(hideTabContentPleaseWait);
+        }
+
+        function getForm(clientId, e) {
+            $('#time-slots').hide();
+
+            $('#organizerClientId').val(clientId);
+            $('#eventDate').val($(e).attr("data-eventdate"));
+            $('#startTime').val($(e).attr('data-starttime'));
+
+            $("#hdnBeMeetingTime").val($(e).html());
+            $("#hdnBeMeetingDateDifference").val($(e).attr("dateDiff"));
+
+            $('#myForm').show();
+
+            setTimeout(function () {
+                $("#be-MeetingWith").html($("#hdnBeMeetingWith").val());
+                $("#be-MeetingDate").html($("#hdnBeMeetingDate").val() + ' ' + $("#hdnBeMeetingTime").val());
+
+                if ($("#hdnBeMeetingDateDifference").val() == "1") {
+                    $("#be-MeetingDate").html($("#hdnBeMeetingTime").val());              
+                }
+            }, 500);
+        }
+
+        var submitSuccess = false;
+        $("#form-event").on('submit', function (e) {
+            e.preventDefault();
+
+            var timeZone = null;
+            var isAdministrator = '@ViewBag.ShowBookedEvents';
+            if (isAdministrator == 'True') {
+                timeZone = '@ViewBag.DefaultTimeZone';
+            }
+            else {
+                timeZone = $('#TimeZone').find(":selected").val();
+            }
+
+            if ($("#form-event").valid()) {
+                let model = {
+                    eventId: '@Model.ID',
+                    organizerClientId: $('#organizerClientId').val(),
+                    eventDate: $('#eventDate').val(),
+                    startTime: $('#startTime').val(),
+                    firstName: $('#firstName').val(),
+                    lastName: $('#lastName').val(),
+                    email: $('#email').val(),
+                    cellPhoneNumber: $('#phone').val(),
+                    timezoneOffset: timeZone
+                };
+
+                //console.log("model: " + JSON.stringify(model, undefined, 4));
+
+                $.ajax({
+                    type: "POST",
+                    url: currentDomain + "Home/AddBookingEvent",
+                    data: JSON.stringify(model),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            $('#new-event-modal').modal('toggle');
+                            $.toast({
+                                text: 'The data has been saved successfully.',
+                                showHideTransition: 'fade',
+                                allowToastClose: true,
+                                hideAfter: 5000,
+                                stack: 3,
+                                position: 'bottom-center',
+                                textAlign: 'left',
+                                loader: true,
+                                loaderBg: '#9EC600'
+                            });
+
+                            $("#hdnNewBookingEID").val(response.bookingEID);
+
+                            $("#hdnMonthViewStartDte").val(response.dteStart);
+                            $("#hdnMonthViewEndDte").val(response.dteEnd);
+
+                            hidePleaseWaitModal();
+                            submitSuccess = true;
+                            clearBookingEventForm();
+                        }
+                        else {
+                            hidePleaseWaitModal();
+                            formilaeAlert('An error occurred. Please try again and contact the web aministrator if the issue persists.', '', false, true);
+                        }
+                    },
+                    error: function () {
+                        hidePleaseWaitModal();
+                        formilaeAlert('An error occurred. Please try again and contact the web aministrator if the issue persists.', '', false, true);
+                    }
+                }).done(reLoadCalendarData);
+            }
+        });
+
+        function clearBookingEventForm() {
+            $(".be-FormField").each(function () {
+                $(this).val("");
+            });
+            $('#form-event').removeClass('was-validated');
+        }
+    </script>
+}
+    <input type="hidden" id="hdnBeMeetingWith" />
+    <input type="hidden" id="hdnBeMeetingDate" />
+    <input type="hidden" id="hdnBeMeetingTime" />
+    <input type="hidden" id="hdnBeMeetingDateDifference" />
+    <input type="hidden" id="hdnMonthViewStartDte" />
+    <input type="hidden" id="hdnMonthViewEndDte" />
+    <input type="hidden" id="hdnNewBookingEID" />
+    <input type="hidden" id="tmpBEID" value="@bookingEventId" />

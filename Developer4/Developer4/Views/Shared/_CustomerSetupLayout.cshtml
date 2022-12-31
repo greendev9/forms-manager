@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+    <meta content="Coderthemes" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="~/assets/images/favicon.ico">
+
+    <!-- Sweet Alert-->
+    <link href="~/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Summernote css -->
+    <link href="~/assets/libs/summernote/summernote-bs4.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Plugins css -->
+    <link href="~/assets/libs/dropzone/min/dropzone.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- App css -->
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" id="bs-default-stylesheet" />
+    <link href="~/assets/css/app.min.css" rel="stylesheet" type="text/css" id="app-default-stylesheet" />
+    <link href="~/assets/css/bootstrap-dark.min.css" rel="stylesheet" type="text/css" id="bs-dark-stylesheet" />
+    <link href="~/assets/css/app-dark.min.css" rel="stylesheet" type="text/css" id="app-dark-stylesheet" />
+    <!-- icons -->
+    <link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/global.css" rel="stylesheet" type="text/css" />
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/glbl")
+    @Scripts.Render("~/bundles/layout")
+
+    @{
+        // Added the below jquery-ui.js file to get the "dialog" working (Using it to replace boring javascript "alert" function)
+    }
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+</head>
+
+<body class="loading">
+
+    <!-- Begin page -->
+    <div id="wrapper">
+
+        @Html.Partial("~/Views/Shared/_LeftSidebar.cshtml")
+        <!-- ============================================================== -->
+        <!-- Start Page Content here -->
+        <!-- ============================================================== -->
+
+        <div class="content-page">
+
+            @Html.Partial("~/Views/Shared/_TopBar.cshtml")
+
+            <div class="content">
+                <!-- Start Content-->
+                @RenderBody()
+
+            </div> <!-- content -->
+            <!-- file preview template -->
+            <div class="d-none" id="uploadPreviewTemplate">
+                <div class="card mt-1 mb-0 shadow-none border">
+                    <div class="p-2">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <i class="mdi mdi-file-upload-outline"></i>
+                            </div>
+                            <div class="col pl-0">
+                                <a href="javascript:void(0);" class="text-muted font-weight-bold" data-dz-name></a>
+                                <p class="mb-0" data-dz-size></p>
+                            </div>
+                            <div class="col-auto">
+                                <!-- Button -->
+                                <a href="" class="btn btn-link btn-lg text-muted" data-dz-remove>
+                                    <i class="dripicons-cross"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @Html.Partial("~/Views/Shared/_Footer.cshtml")
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End Page content -->
+        <!-- ============================================================== -->
+
+
+    </div>
+    <a href="javascript:;" id="return-to-top"><i class="dripicons-chevron-up" style="font-size: 18px; font-weight: bolder;"></i></a>
+    <!-- END wrapper -->
+    @Html.Partial("~/Views/Shared/_RideSidebar.cshtml")
+
+    @Html.Partial("~/Views/Shared/_PleaseWaitModal.cshtml")
+
+   
+    <!-- Vendor js -->
+    <script src="~/assets/js/vendor.min.js"></script>
+
+    <!-- Sweet Alerts js -->
+    <script src="~/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+
+    <!-- Sweet alert init js-->
+    <script src="~/assets/js/pages/sweet-alerts.init.js"></script>
+
+    <!-- Summernote js -->
+    <script src="~/assets/libs/summernote/summernote-bs4.min.js"></script>
+
+    <!-- Init js -->
+    <script src="~/assets/js/pages/form-summernote.init.js"></script>
+
+    <!-- Plugins js -->
+    <script src="~/assets/libs/dropzone/min/dropzone.min.js"></script>
+
+    <!-- Init js-->
+    <script src="~/assets/js/pages/form-fileuploads.init.js"></script>
+
+    <!-- App js -->
+    <script src="~/assets/js/app.min.js"></script>
+
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

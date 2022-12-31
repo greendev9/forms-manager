@@ -1,0 +1,252 @@
+﻿@using Admin.ViewModels
+
+@{
+    ViewBag.Title = "Form Questions Upload Utility";
+    Layout = "~/Views/Shared/_FileUploadLayout.cshtml";
+    List<TempFormQuestion> formQuestions = Session["FormQuestionsUpload_FormQuestions"] != null ? (List<TempFormQuestion>)Session["FormQuestionsUpload_FormQuestions"] : new List<TempFormQuestion>();
+    bool noFileSelected = Session["FormQuestionsUpload_NoFileSelected"] != null ? (bool)Session["FormQuestionsUpload_NoFileSelected"] : false;
+    string status = Session["FormQuestionsUpload_Status"] != null ? Session["FormQuestionsUpload_Status"].ToString() : String.Empty;
+    string statusMsg = Session["FormQuestionsUpload_Msg"] != null ? Session["FormQuestionsUpload_Msg"].ToString() : String.Empty;
+    var errs = formQuestions.Where(q => q.ErrMsg != "").Count();
+    var clientId = Session["userId"] != null ? Convert.ToInt32(Session["userId"]) : 0;
+    var customerId = Session["CustomerID"] != null ? Convert.ToInt32(Session["CustomerID"]) : 0;
+}
+<script type="text/javascript">
+    var currentDomain = '@Url.Content("~")';
+    $(document).ready(function () {
+        Dropzone.myAwesomeDropzone = false;
+
+        //Simple Dropzonejs 
+        $("#myAwesomeDropzone").dropzone({
+            url: currentDomain + "ApplicationSetup/FormQuestionsUpload",
+            addRemoveLinks: false,
+            timeout: 180000,
+            success: function (file, response) {
+                file.previewElement.classList.add("dz-success");
+                window.location.href = currentDomain + "ApplicationSetup/FormQuestionsUpload?postBack=1&s=" + response.status + "&m=" + response.Message;
+            },
+            error: function (file, response) {
+                currentDomain + "ApplicationSetup/FormQuestionsUpload?postBack=1&s=" + response.status + "&m=" + response.Message;
+                hidePleaseWaitModal();
+            },
+            uploadprogress: function (file, progress, bytesSent) {
+                $(".dz-progress").remove();
+                showPleaseWaitModal("The browser is now working on your request. This may take a while depending on the size of your upload. Thanks for your patience.");
+            }
+        });
+    });
+</script>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-9">
+            <div class="card">
+                <div class="card-body">
+                    @if (noFileSelected || errs > 0 || status == "failed")
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <strong>The upload was not successful.</strong>
+                            @if (!String.IsNullOrEmpty(statusMsg))
+                            {
+                                <br /><br /><span style="font-weight: bold;">Error:</span><br />@statusMsg
+                            }
+                            else
+                            {
+                                <span>(No valid .csv file selected for the upload, or see highlighted error messages below.)</span>
+                            }
+                        </div>
+                    }
+                    else if (formQuestions.Count > 0)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            The upload was successful. The results of your upload are below.
+                        </div>
+                    }
+
+                    <form action="/" method="post" class="dropzone" id="myAwesomeDropzone" data-previews-container="#file-previews"
+                          data-upload-preview-template="#uploadPreviewTemplate">
+                        <div class="fallback">
+                            <input name="postedFile" id="postedFile" type="file" />
+                        </div>
+
+                        <div class="dz-message needsclick">
+                            <i class="h1 text-muted dripicons-cloud-upload"></i>
+                            <h3>Drop file here or click to upload.</h3>
+                            <span class="text-muted font-13">
+                                (File must be a comma-delimited CSV file.)
+                            </span>
+                        </div>
+                        <input type="hidden" name="customerId" id="customerId" value="@clientId" />
+                        <input type="hidden" name="clientId" id="clientId" value="@customerId" />
+                    </form>
+
+                    <!-- Preview -->
+                    <div class="dropzone-previews mt-3" id="file-previews"></div>
+
+                    <!--<div class="clearfix text-right mt-3">
+        <button type="button" id="btnUpload" class="btn btn-success"> <i class="mdi mdi-send mr-1"></i> Submit</button>
+    </div>-->
+
+                </div> <!-- end card-body-->
+            </div> 
+            <!-- end card-->
+
+                <div class="card">
+                    <div class="card-body">
+                        @if (Session["FormQuestionsUpload_FormQuestions"] != null)
+                        {
+                            var itemCount = 0;
+                            <h4 class="header-title">Upload Results</h4>
+                            <p class="sub-header">
+                                Below are the results of the file upload.
+                            </p>
+                            <div class="responsive-table-plugin">
+                                <div class="table-rep-plugin">
+                                    <div class="table-responsive">
+                                        <table id="tblUploadedFormQuestions" class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>SortOrder</th>
+                                                    <th>QuestionOfficial</th>
+                                                    <th>FormLabel</th>
+                                                    <th>Error</th>
+                                                    <th>QuestionNo</th>
+                                                    <th>MultiSectionQuestion</th>
+                                                    <th>SectionName</th>
+                                                    <th>SubSectionName</th>
+                                                    <th>ChoiceText</th>
+                                                    <th>MaxChars</th>
+                                                    <th>IsSingleCheckbox</th>
+                                                    <th>PageNo</th>
+                                                    <th>MultiSectionName</th>
+                                                    <th>MultiSectionNo</th>
+                                                    <th>FormCode</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in formQuestions)
+                                                {
+                                                    itemCount++;
+                                                    var trClass = !String.IsNullOrEmpty(item.ErrMsg) || Request.QueryString["m"] == "There should only be one Form Code per upload." ? "table-warning" : "";
+                                                    // more checks
+                                                    if (!String.IsNullOrEmpty(item.MultiSectionName) && String.IsNullOrEmpty(item.MultiSectionNo))
+                                                    {
+                                                        trClass = "table-warning";
+                                                    }
+                                                    var errMsg = item.ErrMsg;
+                                                    if (Request.QueryString["m"] == "There should only be one Form Code per upload.")
+                                                    {
+                                                        trClass = "table-warning";
+                                                        errMsg += !String.IsNullOrEmpty(item.ErrMsg) ? "<br />" : "";
+                                                        errMsg += "<span>Multiple Form Codes detected.</span>";
+                                                    }
+                                                    if (!String.IsNullOrEmpty(item.MultiSectionName) && String.IsNullOrEmpty(item.MultiSectionNo))
+                                                    {
+                                                        trClass = "table-warning";
+                                                        errMsg += !String.IsNullOrEmpty(item.ErrMsg) ? "<br />" : "";
+                                                        errMsg += "<span>MultiSectionNo is required</span>";
+                                                    }
+                                                    if (item.MultiSectionNo.Length > 0)
+                                                    {
+                                                        var multiQuestHeaderCount = formQuestions.Where(q => q.MultiSectionName == item.MultiSectionName && q.MultiSectionNo == "1" && q.MultiSectionQuestion.Length > 0).Count();
+                                                        if (multiQuestHeaderCount == 0)
+                                                        {
+                                                            trClass = "table-warning";
+                                                            errMsg += !String.IsNullOrEmpty(item.ErrMsg) ? "<br />" : "";
+                                                            errMsg += "<span>MultiSectionQuestion is required.</span>";
+                                                        }
+                                                    }
+                                                    if (!(item.ChoiceText.Contains("MultiSelect:") || item.ChoiceText.Contains("RadioList:")))
+                                                    {
+                                                        var formLabelCount = formQuestions.Where(q => q.FormLabel == item.FormLabel).Count();
+                                                        if (formLabelCount > 1 && !String.IsNullOrEmpty(item.FormLabel))
+                                                        {
+                                                            trClass = "table-warning";
+                                                            errMsg += !String.IsNullOrEmpty(item.ErrMsg) ? "<br />" : "";
+                                                            errMsg += "<span>Duplicate Form Label detected.</span>";
+                                                        }
+                                                    }
+                                                    var sortValueCount = formQuestions.Where(q => q.SortOrder == item.SortOrder).Count();
+                                                    if (sortValueCount > 1)
+                                                    {
+                                                        trClass = "table-warning";
+                                                        errMsg += !String.IsNullOrEmpty(item.ErrMsg) ? "<br />" : "";
+                                                        errMsg += "<span>Duplicate Sort Order value detected.</span>";
+                                                    }
+                                                <tr class="@trClass">
+                                                    <td>@item.SortOrder</td>
+                                                    <td>@item.QuestionOfficial</td>
+                                                    <td>@item.FormLabel</td>
+                                                    <td style="color: #800000 !important;">
+                                                        @Html.Raw(errMsg.Replace("{br}", "<br />"))
+                                                    </td>
+                                                    <td>@item.QuestionNo</td>
+                                                    <td>@item.MultiSectionQuestion</td>
+                                                    <td>@item.SectionName</td>
+                                                    <td>@item.SubSectionName</td>
+                                                    <td>@item.ChoiceText</td>
+                                                    <td>@item.MaxChars</td>
+                                                    <td>@item.IsSingleCheckbox</td>
+                                                    <td>@item.PageNo</td>
+                                                    <td>@item.MultiSectionName</td>
+                                                    <td>@item.MultiSectionNo</td>
+                                                    <td>@item.FormCode</td>
+                                                </tr>
+                                                }
+                                                @{
+                                                    // Reset each time we get here
+                                                    Session["FormQuestionsUpload_FormQuestions"] = null;
+                                                    Session["FormQuestionsUpload_NoFileSelected"] = null;
+                                                    Session["FormQuestionsUpload_Status"] = null;
+                                                    Session["FormQuestionsUpload_Msg"] = null;
+
+                                                    if (formQuestions.Count == 0)
+                                                    {
+                                                        <tr class="table-warning">
+                                                            <td colspan="15">No records to display.</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                <tr>
+                                                    <td colspan="15" style="text-align: left;"><span style="font-weight: bold;">Total Records:</span> @itemCount</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div> <!-- end .table-responsive -->
+
+                                </div> <!-- end .table-rep-plugin-->
+                            </div> <!-- end .responsive-table-plugin-->
+                                                    }
+                                                    else
+                                                    {
+                            <div>
+                                <h4 class="header-title">FAQ</h4>
+                                <p class="sub-header">
+                                    Coming soon. Upload FAQ questions here.
+                                </p>
+                            </div>
+                                                    }
+                    </div>
+                </div> <!-- end card -->
+        </div>
+        <!-- end col -->
+
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-center">How It Works ?</h5>
+                    <p class="sub-header">
+                        If you have not become familiar with the csv file columns required for the upload, please <a href="~/Content/Files/FormQuestionUploadTemplate.xlsx" target="_blank">
+                            download the template.
+                        </a> The template (if used) must be converted to .csv after adding the data to the file.
+                        <br /><br />Please <a href="javascript:alert('coming soon');">open a support ticket</a> if you need help getting started.
+                    </p>
+
+                </div>
+                </div>
+        </div> 
+        <!-- end col-->
+    </div>
+    <!-- end row -->
+</div> <!-- container-fluid -->

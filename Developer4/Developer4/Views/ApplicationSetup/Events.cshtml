@@ -1,0 +1,73 @@
+﻿@model IEnumerable<SharedAssemblies.Models.EventsGet>
+
+@{
+    ViewBag.Title = "Events";
+    ViewBag.Page = ViewBag.Title;
+    int i = 0;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <h4 class="header-title col-5">@ViewBag.Title</h4>
+                        <div class="col-7 align-self-center">
+                            <div class="d-flex justify-content-end align-items-center">
+                                <div class="mr-2">
+                                    <a href="~/ApplicationSetup/AddEvent" class="btn btn-info waves-effect waves-light">Add Event</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-info">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Event Name</th>
+                                    <th>Description</th>
+                                    <th>Location</th>
+                                    <th>Duration</th>
+                                    <th style="text-align: center">Active</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Count() > 0)
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        i++;
+                                        <tr>
+                                            <th>@i</th>
+                                            <td>@Html.DisplayFor(modelItem => item.EventName)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Location)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Duration) minutes</td>
+                                            <td align="center">
+                                                @if (item.Active == 1)
+                                                {<i class="fas fa-check"></i>}
+                                            </td>
+                                            <td align="center">
+                                                <a href="~/ApplicationSetup/UpdateEvent/@item.ID" class="btn btn-info waves-effect waves-light">Edit</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" align="center"><h3>No records to display.</h3></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

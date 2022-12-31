@@ -1,0 +1,187 @@
+﻿@model IEnumerable<SharedAssemblies.Models.AdminClientsGet>
+
+@{
+    ViewBag.Title = "User Manager";
+    ViewBag.Page = ViewBag.Title;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <h4 class="header-title col-5">User Manager</h4>
+                        <div class="col-7 align-self-center">
+                            <div class="d-flex justify-content-end align-items-center">
+                                <div class="mr-2">
+                                    <a href="~/UserSetup/AddUser" class="btn btn-info waves-effect waves-light">Add User</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form asp-action="Users" method="get">
+                        <div class="form-group row">
+                            <span class="col-md-3">
+                                <input type="text" name="SearchString" placeholder="Search" class="form-control" value="@ViewData["CurrentFilter"]" />
+                            </span>
+                            <span><input type="submit" value="Search" class="btn btn-primary" /></span>
+                        </div>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-info">
+                                <tr>
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>Login E-mail</th>
+                                    <th>Phone</th>
+                                    <th style="text-align: center">Active</th>
+                                    <th style="text-align: center">Admin</th>
+                                    <th style="text-align: center">Roles/Permissions</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Count() > 0)
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td align="center">
+                                                @if (!string.IsNullOrEmpty(item.Avatar))
+                                                {<img src="~/assets/images/users/@item.Avatar" class="rounded-circle" height="25" />}
+                                                else
+                                                {<img src="~/assets/images/users/no-avatar.jpg" class="rounded-circle" height="25" />}
+                                            </td>
+                                            <td>@Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.LastName)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.PhoneNumber)</td>
+                                            <td align="center">
+                                                <div class="custom-control custom-switch">
+                                                    @if (item.Active == 1)
+                                                    {<input type="checkbox" class="custom-control-input" onchange=Checked(this) data-id="@item.ID" id="chk-@item.ID" checked>}
+                                                    else
+                                                    {<input type="checkbox" class="custom-control-input" onchange=Checked(this) data-id="@item.ID" id="chk-@item.ID">}
+                                                    <label class="custom-control-label" for="chk-@item.ID"></label>
+                                                </div>
+                                            </td>
+                                            <td align="center">
+                                                @if (item.Admin == 1)
+                                                {<i class="fas fa-check"></i>}
+                                            </td>
+                                            <td align="center">
+                                                <a data-toggle="modal" href="#Users-@item.ID" onclick="getRoles(this)" data-id="@item.ID"><i class="fas fa-users"></i></a>
+
+                                                <div id="Users-@item.ID" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" aria-hidden="true"><i class="fas fa-times"></i></button>
+                                                            </div>
+                                                            <div class="modal-body" id="body-@item.ID">
+                                                                <h4 class="header-title text-left">@Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.LastName)</h4>
+                                                                <p class="sub-header text-left">List of roles and permissions</p>
+
+                                                                <div class="tabs-vertical-env">
+                                                                    <div class="row">
+                                                                        <div class="col-sm-3">
+                                                                            <div class="nav flex-column nav-pills tabs-vertical" role="tablist" aria-orientation="vertical" id="tab-@item.ID"></div>
+                                                                        </div>
+                                                                        <div class="col-sm-9">
+                                                                            <div class="tab-content pt-0" id="panel-@item.ID"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-danger waves-effect text-left" data-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td align="center"><a href="~/UserSetup/UpdateUser/@item.ID" class="btn btn-info waves-effect waves-light">Edit</a></td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="8" align="center"><h3>No records to display.</h3></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        function Checked(e) {
+            var model = {
+                id: $(e).attr("data-id"),
+                isChecked: $(e).is(":checked")
+            };
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Content("~/")' + "UserSetup/UserActiveSet",
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            });
+        };
+
+        function getRoles(e) {
+            var id = $(e).attr("data-id");
+            var url = '@Url.Content("~/")' + "UserSetup/RolesInUser";
+
+            $.getJSON(url, { id: id }, function (data) {
+                $('#tab-' + id).html("");
+                $('#panel-' + id).html("");
+
+                if (data.model.length > 0) {
+                    for (var i = 0; i < data.model.length; i++) {
+                        var div = $('<a class="nav-link mb-1" data-toggle="pill" href="#Roles-' + data.model[i].ID + '" role="tab">');
+                        div.append('<span class="d-inline-block ml-2"> ' + data.model[i].RoleName + '</span >');
+                        $('#tab-' + id).append(div);
+
+                        var panel = $('<div class="tab-pane fade" id="Roles-' + data.model[i].ID + '" role="tabpanel">')
+                        panel.append('<table class="table" id="tbl-' + data.model[i].ID + '">' +
+                            '<thead class="thead-light">' +
+                            '<tr><th>Permission Name</th><th>Description</th></tr>' +
+                            '</thead><tbody></tbody></table>');
+                        $('#panel-' + id).append(panel);
+
+                        getPermission(id, data.model[i].ID);
+                    }
+                    $(".nav-link:first-child").addClass('active');
+                }
+                else {
+                    $('#body-' + id).html("");
+                    $('#body-' + id).append("<h3>This user has no permissions.</h3>");
+                }
+            });
+        };
+
+        function getPermission(clientId, roleId) {
+            var url = '@Url.Content("~/")' + "UserSetup/PermissionsInRole";
+            $.getJSON(url, { clientId: clientId, roleId: roleId }, function (response) {
+
+                for (var i = 0; i < response.length; i++) {
+                    var tr = $("<tr/>");
+
+                    tr.append("<td>" + response[i].PermissionName + "</td>");
+                    tr.append("<td>" + response[i].Description + "</td>");
+                    $('#tbl-' + roleId).append(tr);
+                }
+                $(".tab-pane:first-child").addClass('show active');
+            });
+        }
+    </script>
+}

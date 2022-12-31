@@ -1,0 +1,147 @@
+﻿@model IEnumerable<SharedAssemblies.Models.SupportTicketsGet>
+
+@{
+    ViewBag.Title = "Support tickets";
+    ViewBag.Page = ViewBag.Title;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="header-title">@ViewBag.Title</h4>
+                    <table id="myTable" class="table table-bordered dt-responsive nowrap w-100">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Ticket #</th>
+                                <th>Subject</th>
+                                <th>Status</th>
+                                <th>Date Created</th>
+                                <th>Last Update</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td align="center">
+                                        <img src="~/assets/images/users/@item.AvatarFile" alt="@item.CreatedBy" class="rounded-circle avatar-sm" />
+                                    </td>
+                                    <td>@item.ID</td>
+                                    <td>@item.Subject</td>
+                                    <td>
+                                        @{ var status = item.Closed == 1 ? "badge-soft-secondary" : "badge-soft-primary"; }
+                                        <span class="badge @status">@item.Status</span>
+                                    </td>
+                                    <td>@item.CreatedDate</td>
+                                    <td>@item.LastUpdate</td>
+                                    <td align="center"><a href="#" class="btn btn-primary waves-effect waves-light" target="_blank">View</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <hr />
+                <div class="card-body">
+                    <div id="msgDiv">
+                        <div class="alert alert-success">
+                            The support request has been submitted.
+                        </div>
+                        <a href="~/Home/Support">Refresh page</a>
+                    </div>
+                    <div id="formDiv" class="row">
+                        <div class="col-md-1">
+                            @{
+                                var avatarFile = Session["avatar"] != null ?
+                                (!String.IsNullOrEmpty(Session["avatar"].ToString()) ?
+                                Session["avatar"].ToString() : "no-avatar.jpg") : "no-avatar.jpg";
+                            }
+                            <img src="~/assets/images/users/@avatarFile" class="rounded-circle avatar-sm" />
+                        </div>
+                        <div class="col-md-11">
+                            <form id="myForm">
+                                <div class="form-group">
+                                    <label for="Subject" class="control-label">Subject</label>
+                                    <input type="text" id="Subject" name="Subject" class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="Message" class="control-label">Description</label>
+                                    <textarea type="text" id="Message" name="Message" class="form-control" style="min-height: 200px;"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-info waves-effect waves-light">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+    <script type="text/javascript">
+        var currentDomain = '@Url.Content("~")';
+        $('#myTable').DataTable({
+            "oLanguage": {
+                "sEmptyTable": "No issues found."
+            }
+        });
+
+        $(document).ready(function () {
+            $('#myForm').validate({
+                errorClass: "field-validation-error text-danger",
+                errorElement: "span",
+                rules: {
+                    Subject: {
+                        required: true,
+                        maxlength: 100
+                    },
+                    Message: {
+                        required: true
+                    }
+                },
+                messages: {
+                    Subject: {
+                        maxlength: "This field can not be longer than 100 characters."
+                    }
+                }
+            });
+            $('#msgDiv').hide();
+        });
+
+        $('#myForm').on('submit', function (e) {
+            e.preventDefault();
+            if ($('#myForm').valid()) {
+                var model = {
+                    subject: $('#Subject').val(),
+                    message: $('#Message').val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: currentDomain + "Home/AddSupport",
+                    data: JSON.stringify(model),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            $('#msgDiv').show();
+                            $('#formDiv').hide();
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}

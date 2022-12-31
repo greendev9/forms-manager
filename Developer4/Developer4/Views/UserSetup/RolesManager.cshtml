@@ -1,0 +1,131 @@
+﻿@model IEnumerable<SharedAssemblies.Models.AdminRolesGet>
+
+@{
+    ViewBag.Title = "Manage Roles";
+    ViewBag.Page = "Manage Roles";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <h4 class="header-title col-5">Manage Roles</h4>
+                    </div>
+                    <form asp-action="CustomerGlossary" method="get">
+                        <div class="form-group row">
+                            <span class="col-md-3">
+                                <input type="text" name="SearchString" placeholder="Search" class="form-control" value="@ViewData["CurrentFilter"]" />
+                            </span>
+                            <span><input type="submit" value="Search" class="btn btn-primary" /></span>
+                        </div>
+                    </form>
+                    @if (Model.Count() > 0)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-info">
+                                    <tr>
+                                        <th>Role</th>
+                                        <th style="text-align: center">Users</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@Html.DisplayFor(modelItem => item.RoleName)</td>
+                                            <td align="center">
+                                                <a data-toggle="modal" href="#Users-@item.ID" onclick="getTable(this)" data-id="@item.ID"><i class="fas fa-users"></i></a>
+
+                                                <div id="Users-@item.ID" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <div>
+                                                                    <h4 class="modal-title text-uppercase">@item.RoleName Role</h4>
+                                                                    <p class="text-left">Users assigned to this role</p>
+                                                                </div>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" aria-hidden="true"><i class="fas fa-times"></i></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <table class="table table-bordered" id="tbl-@item.ID">
+                                                                    <thead class="table-info">
+                                                                        <tr>
+                                                                            <th></th>
+                                                                            <th>Name</th>
+                                                                            <th>Email</th>
+                                                                            <th></th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody></tbody>
+                                                                </table>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-danger waves-effect text-left" data-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            @{ 
+                                                var editUrl = "/UserSetup/RoleManagerEdit/" + item.ID + "?roleName=" + item.RoleName;
+                                            }
+                                            <td align="center"><a href="@editUrl" class="btn btn-info waves-effect waves-light">Edit</a></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-info">
+                                    <tr>
+                                        <th>Role</th>
+                                        <th>Users</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="3" align="center"><h3>No records to display.</h3></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        function getTable(e) {
+            var id = $(e).attr("data-id");
+            var url = '@Url.Content("~/")' + "UserSetup/UsersInRole";
+
+            $.getJSON(url, {id: id}, function (data) {
+                $("#tbl-" + id + " tbody").html("");
+
+                for (var i = 0; i < data.length; i++) {
+                    var tr = $("<tr/>");
+
+                    if (data[i].Avatar.length != 0) { tr.append("<td align='center'><img src='/assets/images/users/" + data[i].Avatar + "' class='rounded-circle' height='25' /></td>"); }
+                    else { tr.append("<td align='center'><img src='/assets/images/users/no-avatar.jpg' class='rounded-circle' height='25' /></td>"); }
+
+                    tr.append("<td>" + data[i].FullName + "</td>");
+                    tr.append("<td>" + data[i].Email + "</td>");
+                    tr.append("<td align='center'><a href='/UserSetup/UpdateUser/" + data[i].ID + "' class='btn btn-info waves-effect waves-light'>Edit</a></td>");
+                    $("#tbl-" + id).append(tr);
+                }
+            });
+        };
+    </script>
+}

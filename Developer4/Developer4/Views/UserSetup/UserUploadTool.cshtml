@@ -1,0 +1,193 @@
+﻿@using Admin.ViewModels
+
+@{
+    ViewBag.Title = "User Upload Tool";
+    Layout = "~/Views/Shared/_FileUploadLayout.cshtml";
+    List<TempClient> model = Session["ClientsUpload_Clients"] != null ? (List<TempClient>)Session["ClientsUpload_Clients"] : new List<TempClient>();
+    bool noFileSelected = Session["ClientsUpload_NoFileSelected"] != null ? (bool)Session["ClientsUpload_NoFileSelected"] : false;
+    string status = Session["ClientsUpload_Status"] != null ? Session["ClientsUpload_Status"].ToString() : String.Empty;
+    string statusMsg = Session["ClientsUpload_Msg"] != null ? Session["ClientsUpload_Msg"].ToString() : String.Empty;
+    var errs = model.Where(q => q.ErrMsg != "").Count();
+    var clientId = Session["userId"] != null ? Convert.ToInt32(Session["userId"]) : 0;
+    var customerId = Session["CustomerID"] != null ? Convert.ToInt32(Session["CustomerID"]) : 0;
+}
+
+<script type="text/javascript">
+    var currentDomain = '@Url.Content("~")';
+    $(document).ready(function () {
+        Dropzone.myAwesomeDropzone = false;
+
+        //Simple Dropzonejs
+        $("#myAwesomeDropzone").dropzone({
+            url: currentDomain + "UserSetup/UserUploadTool",
+            addRemoveLinks: false,
+            timeout: 180000,
+            success: function (file, response) {
+                file.previewElement.classList.add("dz-success");
+                window.location.href = currentDomain + "UserSetup/UserUploadTool?postBack=1&s=" + response.status + "&m=" + response.Message;
+            },
+            error: function (file, response) {
+                currentDomain + "UserSetup/UserUploadTool?postBack=1&s=" + response.status + "&m=" + response.Message;
+                hidePleaseWaitModal();
+            },
+            uploadprogress: function (file, progress, bytesSent) {
+                $(".dz-progress").remove();
+                showPleaseWaitModal("The browser is now working on your request. This may take a while depending on the size of your upload. Thanks for your patience.");
+            }
+        });
+    });
+</script>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-9">
+            <div class="card">
+                <div class="card-body">
+                    @if (noFileSelected || errs > 0 || status == "failed")
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <strong>The upload was not successful.</strong>
+                            @if (!String.IsNullOrEmpty(statusMsg))
+                            {
+                                <br /><br /><span style="font-weight: bold;">Error:</span><br />@statusMsg
+                            }
+                            else
+                            {
+                                <span>(No valid .csv file selected for the upload, or see highlighted error messages below.)</span>
+                            }
+                        </div>
+                    }
+                    else if (model.Count > 0)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            The upload was successful. The results of your upload are below.
+                        </div>
+                    }
+
+                    <form action="/" method="post" class="dropzone" id="myAwesomeDropzone" data-previews-container="#file-previews"
+                          data-upload-preview-template="#uploadPreviewTemplate">
+                        <div class="fallback">
+                            <input name="postedFile" id="postedFile" type="file" />
+                        </div>
+
+                        <div class="dz-message needsclick">
+                            <i class="h1 text-muted dripicons-cloud-upload"></i>
+                            <h3>Drop file here or click to upload.</h3>
+                            <span class="text-muted font-13">
+                                (File must be a comma-delimited CSV file.)
+                            </span>
+                        </div>
+                        <input type="hidden" name="customerId" id="customerId" value="@clientId" />
+                        <input type="hidden" name="clientId" id="clientId" value="@customerId" />
+                    </form>
+
+                    <!-- Preview -->
+                    <div class="dropzone-previews mt-3" id="file-previews"></div>
+
+                </div> <!-- end card-body-->
+            </div>
+            <!-- end card-->
+
+            <div class="card">
+                <div class="card-body">
+                    @if (Session["ClientsUpload_Clients"] != null)
+                    {
+                        var itemCount = 0;
+                        <h4 class="header-title">Upload Results</h4>
+                        <p class="sub-header">
+                            Below are the results of the file upload.
+                        </p>
+                        <div class="responsive-table-plugin">
+                            <div class="table-rep-plugin">
+                                <div class="table-responsive">
+                                    <table id="tblUploadedFormQuestions" class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>FirstName</th>
+                                                <th>LastName</th>
+                                                <th>PhoneNumber</th>
+                                                <th>Email</th>
+                                                <th>IsAdministrator</th>
+                                                <th>Error</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in model)
+                                            {
+                                                itemCount++;
+                                                var trClass = !String.IsNullOrEmpty(item.ErrMsg) ? "table-warning" : "";
+                                                // more checks
+                                                var errMsg = item.ErrMsg;
+                                                var emailCount = model.Where(q => q.Email == item.Email).Count();
+                                                if (emailCount > 1 && !String.IsNullOrEmpty(item.Email))
+                                                {
+                                                    trClass = "table-warning";
+                                                    errMsg += !String.IsNullOrEmpty(item.ErrMsg) ? "<br />" : "";
+                                                    errMsg += "<span>Duplicate Email detected.</span>";
+                                                }
+                                                <tr class="@trClass">
+                                                    <td>@item.FirstName</td>
+                                                    <td>@item.LastName</td>
+                                                    <td>@item.PhoneNumber</td>
+                                                    <td>@item.Email</td>
+                                                    <td>@item.IsAdministrator</td>
+                                                    <td style="color: #800000 !important;">
+                                                        @Html.Raw(errMsg.Replace("{br}", "<br />"))
+                                                    </td>
+                                                </tr>
+                                            }
+                                            @{
+                                                // Reset each time we get here
+                                                Session["ClientsUpload_Clients"] = null;
+                                                Session["ClientsUpload_NoFileSelected"] = null;
+                                                Session["ClientsUpload_Status"] = null;
+                                                Session["ClientsUpload_Msg"] = null;
+
+                                                if (model.Count == 0)
+                                                {
+                                                    <tr class="table-warning">
+                                                        <td colspan="5">No records to display.</td>
+                                                    </tr>
+                                                }
+                                            }
+                                            <tr>
+                                                <td colspan="5" style="text-align: left;"><span style="font-weight: bold;">Total Records:</span> @itemCount</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div> <!-- end .table-responsive -->
+                            </div> <!-- end .table-rep-plugin-->
+                        </div> <!-- end .responsive-table-plugin-->
+                    }
+                    else
+                    {
+                        <div>
+                            <h4 class="header-title">FAQ</h4>
+                            <p class="sub-header">
+                                Coming soon. Upload FAQ questions here.
+                            </p>
+                        </div>
+                    }
+                </div>
+            </div> <!-- end card -->
+        </div>
+        <!-- end col -->
+
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-center">How It Works ?</h5>
+                    <p class="sub-header">
+                        If you have not become familiar with the csv file columns required for the upload, please <a href="~/Content/Files/UserUploadTemplate.xlsx" target="_blank">
+                            download the template.
+                        </a> The template (if used) must be converted to .csv after adding the data to the file.
+                        <br /><br />Please <a href="javascript:alert('coming soon');">open a support ticket</a> if you need help getting started.
+                    </p>
+
+                </div>
+            </div>
+        </div>
+        <!-- end col-->
+    </div>
+    <!-- end row -->
+</div> <!-- container-fluid -->

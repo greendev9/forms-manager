@@ -1,0 +1,231 @@
+﻿@model Admin.ViewModels.LookupViewModel
+
+@{
+    ViewBag.Title = "Manage Choice List";
+    ViewBag.Page = ViewBag.Title;
+
+    int id = 1;
+    if (Model.LookupItems.Count() > 0) { id += Model.LookupItems.OrderByDescending(r => r.ID).FirstOrDefault().ID; }
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <form asp-action="ChoiceListEdit" id="myForm" method="post">
+                    <div class="card-body">
+                        @if (!String.IsNullOrEmpty(ViewBag.Message))
+                        {
+                            var statusMessageClass = ViewBag.Message.StartsWith("Error") ? "danger" : "success";
+                            <div class="alert alert-@statusMessageClass alert-dismissible" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                @ViewBag.Message
+                            </div>
+                        }
+                        <h4 class="header-title">@ViewBag.Page</h4>
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.LookupID)
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ListName, htmlAttributes: new { @class = "col-form-label" })
+                            @Html.EditorFor(model => model.ListName, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.ListName) } })
+                            @Html.ValidationMessageFor(model => model.ListName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group mb-0">
+                            <button type="submit" class="btn btn-info waves-effect waves-light"><i class="fa fa-check"></i> Save</button>
+                            <a href="~/ApplicationSetup/ChoiceListManager" class="btn btn-dark waves-effect waves-light">Cancel</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="header-title">Manage Choice</h4>
+                        <p>Choices configured for @Model.ListName list</p>
+                        <div class="table-responsive">
+                            <table class="table" id="myTable">
+                                <thead>
+                                    <tr>
+                                        <th>Value</th>
+                                        <th>Display Value</th>
+                                        <th style="text-align: center">Active</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="myTBody">
+                                    @for (int i = 0; i < Model.LookupItems.Count(); i++)
+                                    {
+                                        <tr id="@Model.LookupItems[i].ID">
+                                            <td>
+                                                <input type="text" id="txtKeyValue-@Model.LookupItems[i].ID" class="form-control" value="@Model.LookupItems[i].KeyValue" onchange="updateData(@Model.LookupItems[i].ID)" />
+                                                <label id="vldKeyValue-@Model.LookupItems[i].ID" class="form-text text-danger" style="display:none">Required</label>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtDisplayValue-@Model.LookupItems[i].ID" class="form-control" value="@Model.LookupItems[i].DisplayValue" onchange="updateData(@Model.LookupItems[i].ID)" />
+                                                <label id="vldDisplayValue-@Model.LookupItems[i].ID" class="form-text text-danger" style="display:none">Required</label>
+                                            </td>
+                                            <td align="center">
+                                                <div class="custom-control custom-switch">
+                                                    @if (Model.LookupItems[i].Active == 1)
+                                                    {<input type="checkbox" id="chk-@Model.LookupItems[i].ID" class="custom-control-input" onchange="updateData(@Model.LookupItems[i].ID)" checked>}
+                                                    else
+                                                    {<input type="checkbox" id="chk-@Model.LookupItems[i].ID" class="custom-control-input" onchange="updateData(@Model.LookupItems[i].ID)">}
+                                                    <label for="chk-@Model.LookupItems[i].ID" class="custom-control-label"></label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td>
+                                            <input type="text" id="txtKeyValue-@id" class="form-control" />
+                                            <label id="vldKeyValue-@id" class="form-text text-danger" style="display:none">Required</label>
+                                        </td>
+                                        <td>
+                                            <input type="text" id="txtDisplayValue-@id" class="form-control" />
+                                            <label id="vldDisplayValue-@id" class="form-text text-danger" style="display:none">Required</label>
+                                        </td>
+                                        <td align="center"><button type="button" class="btn btn-primary waves-effect waves-light" id="btnAdd" onclick="newData(@id)"><i class="fa fa-plus"></i> Add</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+    <script type="text/javascript">
+        function validateForm(i) {
+            var flag = true;
+
+            if (!$("#txtKeyValue-" + i).val()) {
+                $("#vldKeyValue-" + i).show();
+                flag = false;
+            }
+            else { $("#vldKeyValue-" + i).hide(); }
+
+            if (!$("#txtDisplayValue-" + i).val()) {
+                $("#vldDisplayValue-" + i).show();
+                flag = false;
+            }
+            else { $("#vldDisplayValue-" + i).hide(); }
+
+            return flag;
+        }
+
+        function newData(id) {
+            if (validateForm(id)) {
+
+                var model = {
+                    id: id,
+                    keyValue: $("#txtKeyValue-" + id).val(),
+                    displayValue: $("#txtDisplayValue-" + id).val(),
+                    active: 1
+                };
+                $("#btnAdd").closest("tr").remove();
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Content("~/")' + "ApplicationSetup/NewLookupListItems",
+                    data: JSON.stringify(model),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            var tr = $('<tr id="' + model.id + '">');
+                            tr.append('<td><input type="text" id="txtKeyValue-' + model.id + '" class="form-control" value="' + model.keyValue + '" onchange="updateNewData(' + model.id + ')" />' +
+                                '<label id="vldKeyValue-' + model.id + '" class="form-text text-danger" style="display:none">Required</label></td>');
+                            tr.append('<td><input type="text" id="txtDisplayValue-' + model.id + '" class="form-control" value="' + model.displayValue + '" onchange="updateNewData(' + model.id + ')" />' +
+                                '<label id="vldDisplayValue-' + model.id + '" class="form-text text-danger" style="display:none">Required</label></td>');
+                            tr.append('<td align="center"><div class="custom-control custom-switch">' +
+                                '<input type="checkbox" id="chk-' + model.id + '" class="custom-control-input" onchange="updateNewData(' + model.id + ')" checked>' +
+                                '<label for="chk-' + model.id + '" class="custom-control-label"></label></div></td>');
+                            $("#myTable").append(tr);
+
+                            model.id++;
+                            tr = $("<tr/>");
+                            tr.append('<td><input type="text" id="txtKeyValue-' + model.id + '" class="form-control" />' +
+                                '<label id="vldKeyValue-' + model.id + '" class="form-text text-danger" style="display:none">Required</label></td >');
+                            tr.append('<td><input type="text" id="txtDisplayValue-' + model.id + '" class="form-control" />' +
+                                '<label id="vldDisplayValue-' + model.id + '" class="form-text text-danger" style="display:none">Required</label></td >');
+                            tr.append('<td align="center"><button type="button" class="btn btn-primary waves-effect waves-light" id="btnAdd" onclick="newData(' + model.id + ')"><i class="fa fa-plus"></i> Add</button></td>');
+                            $("#myTable").append(tr);
+                        }
+                    },
+                    error: function () {
+                        alert("Error!");
+                    }
+                });
+            }
+        }
+
+        function updateNewData(id) {
+            if (validateForm(id)) {
+                var isChecked;
+
+                if ($("#chk-" + id).is(":checked")) { isChecked = 1; }
+                else { isChecked = 0; }
+
+                var model = {
+                    id: id,
+                    keyValue: $("#txtKeyValue-" + id).val(),
+                    displayValue: $("#txtDisplayValue-" + id).val(),
+                    active: isChecked
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Content("~/")' + "ApplicationSetup/NewLookupListItems",
+                    data: JSON.stringify(model),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                });
+            }
+        }
+
+        function updateData(id) {
+            if (validateForm(id)) {
+                var isChecked;
+
+                if ($("#chk-" + id).is(":checked")) { isChecked = 1; }
+                else { isChecked = 0; }
+
+                var model = {
+                    id: id,
+                    keyValue: $("#txtKeyValue-" + id).val(),
+                    displayValue: $("#txtDisplayValue-" + id).val(),
+                    active: isChecked,
+                    lookupId: $("#LookupID").val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Content("~/")' + "ApplicationSetup/OldLookupListItems",
+                    data: JSON.stringify(model),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                });
+            }
+        }
+
+        $("#myForm").on('submit', function (e) {
+            e.preventDefault();
+            var ok = $(this).valid();
+            if (ok) {
+                var error = 0;
+
+                $("#myTBody tr").each(function () {
+                    if (!validateForm(this.id)) { error++; }
+                });
+
+                if (error < 2) {
+                    e.currentTarget.submit();
+                }
+            }
+        });
+    </script>
+}

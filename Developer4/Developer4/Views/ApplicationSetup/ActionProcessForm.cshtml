@@ -1,0 +1,277 @@
+﻿@model SharedAssemblies.Models.ProcessFormGet
+
+@{
+    ViewBag.Title = Model.IsSurveyOrQuestionnaire == 1 ? "Manage Survey Form" : "Manage Process Form";
+    ViewBag.Page = ViewBag.Title;
+}
+
+<style type="text/css">
+    .note-editable-background {
+        background-color: #ffffcc !important;
+        padding: 5px !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    .note-codable {
+        background-color: white !important;
+        color: black !important;
+    }
+
+    .not-allowed {
+        cursor: not-allowed;
+        pointer-events: all !important;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <form asp-action="UpdateProcessForm" method="post">
+                    <div class="card-body">
+                        <h4 class="header-title">Modify @Model.FormName</h4>
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.ID)
+                        @Html.HiddenFor(model => model.ProcessID)
+                        @Html.HiddenFor(model => model.IsSurveyOrQuestionnaire)
+                        @if (Model.IsSurveyOrQuestionnaire != 1)
+                        {
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.AutoAddToService)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isAutoAddToService() id="chkAutoAddToService" checked>
+                                    <label class="custom-control-label" for="chkAutoAddToService">@Html.DisplayNameFor(model => model.AutoAddToService)</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.RequiresAdminApproval)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isRequiresAdminApproval() id="chkRequiresAdminApproval" checked>
+                                    <label class="custom-control-label" for="chkRequiresAdminApproval">@Html.DisplayNameFor(model => model.RequiresAdminApproval)</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.ServiceListDisplay)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isServiceListDisplay() id="chkServiceListDisplay" checked>
+                                    <label class="custom-control-label" for="chkServiceListDisplay">@Html.DisplayNameFor(model => model.ServiceListDisplay)</label>
+                                </div>
+                            </div>
+                        }
+                        @if (Model.IsSurveyOrQuestionnaire != 1 && Model.FormGroupID != null)
+                        {
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.AllowAdditionalAttachment)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isAllowAdditionalAttachment() id="chkAllowAdditionalAttachment" checked>
+                                    <label class="custom-control-label" for="chkAllowAdditionalAttachment">@Html.DisplayNameFor(model => model.AllowAdditionalAttachment)</label>
+                                </div>
+                            </div>
+                        }
+                        @if (Model.IsSurveyOrQuestionnaire != 1 && Model.FormGroupID == null)
+                        {
+
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.Required)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isRequired() id="chkRequired" checked>
+                                    <label class="custom-control-label" for="chkRequired">@Html.DisplayNameFor(model => model.Required)</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.FormApprovedOpeningEmailBodyMsg, htmlAttributes: new { @class = "col-form-label" })
+                                @Html.EditorFor(model => model.FormApprovedOpeningEmailBodyMsg, new { htmlAttributes = new { @origVal = Model.FormApprovedOpeningEmailBodyMsg, @style = "height: 115px;", @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.FormApprovedOpeningEmailBodyMsg) } })
+                                @Html.ValidationMessageFor(model => model.FormApprovedOpeningEmailBodyMsg, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ApprovedEmailIfYouHaveQuestionsFooter, htmlAttributes: new { @class = "col-form-label" })
+                                @Html.EditorFor(model => model.ApprovedEmailIfYouHaveQuestionsFooter, new { htmlAttributes = new { @origVal = Model.ApprovedEmailIfYouHaveQuestionsFooter, @style = "height: 115px;", @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.ApprovedEmailIfYouHaveQuestionsFooter) } })
+                                @Html.ValidationMessageFor(model => model.ApprovedEmailIfYouHaveQuestionsFooter, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FormMessageTop, htmlAttributes: new { @class = "col-form-label" })
+                            @Html.EditorFor(model => model.FormMessageTop, new { htmlAttributes = new { @origVal = Model.FormMessageTop, @style = "height: 115px;", @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.FormMessageTop) } })
+                            @Html.ValidationMessageFor(model => model.FormMessageTop, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.HiddenFor(model => model.FormMessageTopPlain)
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" onchange=isFormMessageTopPlain() id="chkFormMessageTopPlain" checked>
+                                <label class="custom-control-label" for="chkFormMessageTopPlain">@Html.DisplayNameFor(model => model.FormMessageTopPlain)</label>
+                            </div>
+                        </div>
+                        @if (Model.IsSurveyOrQuestionnaire == 1)
+                        {
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.DisplayResults)
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" onchange=isDisplayResults() id="chkDisplayResults" checked>
+                                    <label class="custom-control-label" for="chkDisplayResults">@Html.DisplayNameFor(model => model.DisplayResults)</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ResultsMessageTop, htmlAttributes: new { @class = "col-form-label" })
+                                @Html.EditorFor(model => model.ResultsMessageTop, new { htmlAttributes = new { @origVal = Model.ResultsMessageTop, @style = "height: 115px;", @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.ResultsMessageTop) } })
+                                @Html.ValidationMessageFor(model => model.ResultsMessageTop, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.LastPageDelegateName, htmlAttributes: new { @class = "col-form-label" })
+                            @Html.EditorFor(model => model.LastPageDelegateName, new { htmlAttributes = new { @origVal = Model.LastPageDelegateName, @style = "height: 115px;", @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.LastPageDelegateName), @readonly = "readonly" } })
+                            @Html.ValidationMessageFor(model => model.LastPageDelegateName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group mb-0">
+                            <button type="submit" class="btn btn-info waves-effect waves-light"><i class="fa fa-check"></i> Save</button>
+                            @{ var link = Model.IsSurveyOrQuestionnaire == 1 ? "/ApplicationSetup/UpdateSurvey/" + Model.ProcessID : "/ApplicationSetup/UpdateProcess/" + Model.ProcessID; }
+                            <a href="@link" class="btn btn-dark waves-effect waves-light">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <link href="~/assets/libs/summernote/summernote-bs4.min.css" rel="stylesheet" type="text/css" />
+    <script src="~/assets/libs/summernote/summernote-bs4.min.js"></script>
+    <script src="~/assets/js/pages/form-summernote.init.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#FormApprovedOpeningEmailBodyMsg').on("summernote.change", function (e) {
+                textAreaChange($(this), true);
+            });
+            $('#ApprovedEmailIfYouHaveQuestionsFooter').on("summernote.change", function (e) {
+                textAreaChange($(this), true);
+            });
+            $('#FormMessageTop').on("summernote.change", function (e) {
+                textAreaChange($(this), true);
+            });
+            $('#ResultsMessageTop').on("summernote.change", function (e) {
+                textAreaChange($(this), true);
+            });
+
+            $(".note-btn-bold").on("click", function (e) {
+                setTimeout(function () {
+                    textAreaChange($('#FormApprovedOpeningEmailBodyMsg'));
+                    textAreaChange($('#ApprovedEmailIfYouHaveQuestionsFooter'));
+                    textAreaChange($('#FormMessageTop'));
+                    textAreaChange($('#ResultsMessageTop'));
+                }, 1000);
+            });
+
+            if ($("#AutoAddToService").val() == 1) { $("#chkAutoAddToService").prop("checked", true); }
+            else { $("#chkAutoAddToService").prop("checked", false); }
+
+            if ($("#RequiresAdminApproval").val() == 1) { $("#chkRequiresAdminApproval").prop("checked", true); }
+            else { $("#chkRequiresAdminApproval").prop("checked", false); }
+
+            if ($("#ServiceListDisplay").val() == 1) { $("#chkServiceListDisplay").prop("checked", true); }
+            else { $("#chkServiceListDisplay").prop("checked", false); }
+
+            if ($("#AllowAdditionalAttachment").val() == 1) { $("#chkAllowAdditionalAttachment").prop("checked", true); }
+            else { $("#chkAllowAdditionalAttachment").prop("checked", false); }
+
+            if ($("#Required").val() == 1) { $("#chkRequired").prop("checked", true); }
+            else { $("#chkRequired").prop("checked", false); }
+
+            if ($("#FormMessageTopPlain").val() == 1) { $("#chkFormMessageTopPlain").prop("checked", true); }
+            else { $("#chkFormMessageTopPlain").prop("checked", false); }
+
+            if ($("#DisplayResults").val() == 1) { $("#chkDisplayResults").prop("checked", true); }
+            else { $("#chkDisplayResults").prop("checked", false); }
+
+            isAutoAddToService();
+            isRequiresAdminApproval();
+            isServiceListDisplay();
+            isAllowAdditionalAttachment();
+            isRequired();
+            isFormMessageTopPlain();
+            isDisplayResults();
+        });
+
+        function isAutoAddToService() {
+            if ($("#chkAutoAddToService").is(":checked")) { $("#AutoAddToService").val(1); }
+            else { $("#AutoAddToService").val(0); }
+        }
+        function isRequiresAdminApproval() {
+            if ($("#chkRequiresAdminApproval").is(":checked")) { $("#RequiresAdminApproval").val(1); }
+            else { $("#RequiresAdminApproval").val(0); }
+        }
+        function isServiceListDisplay() {
+            if ($("#chkServiceListDisplay").is(":checked")) { $("#ServiceListDisplay").val(1); }
+            else { $("#ServiceListDisplay").val(0); }
+        }
+        function isAllowAdditionalAttachment() {
+            if ($("#chkAllowAdditionalAttachment").is(":checked")) { $("#AllowAdditionalAttachment").val(1); }
+            else { $("#AllowAdditionalAttachment").val(0); }
+        }
+        function isRequired() {
+            if ($("#chkRequired").is(":checked")) { $("#Required").val(1); }
+            else { $("#Required").val(0); }
+        }
+        function isFormMessageTopPlain() {
+            if ($("#chkFormMessageTopPlain").is(":checked")) { $("#FormMessageTopPlain").val(1); }
+            else { $("#FormMessageTopPlain").val(0); }
+        }
+        function isDisplayResults() {
+            if ($("#chkDisplayResults").is(":checked")) { $("#DisplayResults").val(1); }
+            else { $("#DisplayResults").val(0); }
+        }
+
+        function updateHtmlAllowedArea(obj, newHtml) {
+            obj.summernote('code', newHtml);
+        }
+
+        function textAreaChange(obj, summerNoteChange) {
+            summerNoteChange = summerNoteChange || false;
+
+            var origVal = obj.attr("origVal");
+            var currentVal = Trim(obj.val());
+
+            if (!summerNoteChange) {
+                currentVal = Trim(obj.summernote('code'));
+                var newVal = Replace(currentVal, "<b>", "<span style='font-weight: bold;'>");
+                newVal = Replace(newVal, "</b>", "</span>");
+                newVal = Replace(newVal, "<strong>", "<span style='font-weight: bold;'>");
+                newVal = Replace(newVal, "</strong>", "</span>");
+                updateHtmlAllowedArea(obj, newVal);
+            }
+        }
+
+        makeSummernote('#FormApprovedOpeningEmailBodyMsg');
+        makeSummernote('#ApprovedEmailIfYouHaveQuestionsFooter');
+        makeSummernote('#FormMessageTop');
+        makeSummernote('#ResultsMessageTop');
+
+        function makeSummernote(e) {
+            $(e).summernote({
+                placeholder: '',
+                onPaste: function (e) {
+                    var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+                    e.preventDefault();
+                    document.execCommand('insertText', false, bufferText);
+                },
+                lineWrapping: false,
+                height: 200,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'italic', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['table', ['table']],
+                    ['insert', ['link']],
+                    ['view', ['fullscreen', 'codeview']]
+                ]
+            });
+        }
+    </script>
+}

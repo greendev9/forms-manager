@@ -1,0 +1,66 @@
+﻿
+#return-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #02C0CE;
+    width: 39px;
+    height: 36px;
+    display: block;
+    text-decoration: none;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    display: none;
+    -webkit-transition: all 0.3s linear;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+    #return-to-top i {
+        color: #fff;
+        margin: 0;
+        position: relative;
+        left: 10px;
+        top: 6px;
+        font-size: 14px;
+        -webkit-transition: all 0.3s ease;
+        -moz-transition: all 0.3s ease;
+        -ms-transition: all 0.3s ease;
+        -o-transition: all 0.3s ease;
+        transition: all 0.3s ease;
+    }
+
+    #return-to-top:hover {
+        background: #02A2AE;
+    }
+
+    .alertHeaderText {
+        color: #800000 !important;
+        font-weight: bold !important;
+    }
+
+input:disabled {
+    cursor: not-allowed !important;
+    opacity: .6 !important;
+    background: red !important;
+}
+
+button:disabled {
+    cursor: not-allowed !important;
+    pointer-events: all !important;
+}
+
+input.form-control:read-only {
+    background-color: #f0f0f0 !important;
+    cursor: not-allowed !important;
+    color: #777 !important;
+}
+
+textarea:read-only {
+    background-color: #f0f0f0 !important;
+    cursor: not-allowed !important;
+    color: #777 !important;
+}
