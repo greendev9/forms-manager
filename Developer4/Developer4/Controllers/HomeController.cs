@@ -232,17 +232,72 @@ namespace Developer4.Controllers
 
         public ActionResult Test2()
         {
+            var str = "";
+            List<AdminFormsGet> lookForms = new List<AdminFormsGet>() { };
             using (var db1 = new MyDbContext())
             {
-                db1.EventOrganizerAdd(1, 124, "New Record");
+                lookForms = db1.GetForms(115).ToList();
+                foreach (var item in lookForms)
+                {
+                    str += item.FormName + "<br />";
+                }
+            }
+
+            return Content(str);
+        }
+
+        public ActionResult Test3()
+        {
+            var str = "";
+            AdminFormGet lookForm = new AdminFormGet();
+            using (var db1 = new MyDbContext())
+            {
+                lookForm = db1.GetForm(20).FirstOrDefault();
+                str = lookForm.FormName;
+            }
+
+            return Content(str);
+        }
+
+        public ActionResult Test4()
+        {
+            int formId = 0;
+            using (var db1 = new MyDbContext())
+            {
+                formId = db1.AddForm(1, "formName", "formCode123", "idfierMsg",
+                    "coverletterBulletItemText",
+                    "approvalInstructions", 1, 2,
+                    "supplementPageMsg", "supplementPageFieldMsg", 3,
+                    "ptrn", 4, 1, 1,
+                    "header", "hiddenFormCompleted", 1,
+                    1, "N/A");
+            }
+
+            return Content("success.. formID: " + formId.ToString());
+        }
+
+        public ActionResult Test5()
+        {
+            using (var db1 = new MyDbContext())
+            {
+                db1.UpdateForm(48, "formname", "FRMTEST111", 0, "unlckmsg",
+                    "coverletterBulletItemText",
+                    "approvalInstructions", 0, 0,
+                    "supplementPageMsg", "supplementPageFieldMsg", 0,
+                    "ptrn", 0, 0, 0,
+                    "header", "hiddenFormCompleted", 0,
+                    0, "na");
             }
 
             return Content("success");
         }
 
-        public ActionResult Test3()
+        public ActionResult Test6()
         {
-            db.EventOrganizerUpdate(1, 124, "Updated Record");
+            using (var db1 = new MyDbContext())
+            {
+                db1.FormDelete(42);
+            }
 
             return Content("success");
         }

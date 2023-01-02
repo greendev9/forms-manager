@@ -84,7 +84,6 @@ C:\Users\cheri\source\repos\FormilaeDeveloper4\Developer4\Developer4\bin\System.
 C:\Users\cheri\source\repos\FormilaeDeveloper4\Developer4\Developer4\bin\Newtonsoft.Json.xml
 C:\Users\cheri\source\repos\FormilaeDeveloper4\Developer4\Developer4\bin\Antlr3.Runtime.pdb
 C:\Users\cheri\source\repos\FormilaeDeveloper4\Developer4\Developer4\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-C:\Users\cheri\source\repos\FormilaeDeveloper4\Developer4\Developer4\obj\Debug\Developer4.csprojAssemblyReference.cache
 C:\Users\cheri\source\repos\FormilaeDeveloper4\Developer4\Developer4\obj\Debug\Developer4.csproj.CoreCompileInputs.cache
 C:\Users\cheri\source\repos\FormilaeDeveloper4\Developer4\Developer4\obj\Debug\Developer4.csproj.CopyComplete
 C:\Users\cheri\source\repos\FormilaeDeveloper4\Developer4\Developer4\obj\Debug\Developer4.dll

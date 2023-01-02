@@ -171,6 +171,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AdminClientsGet.cs" />
+    <Compile Include="Models\AdminFormGet.cs" />
+    <Compile Include="Models\AdminFormsGet.cs" />
     <Compile Include="Models\AdminLookupItemsGet.cs" />
     <Compile Include="Models\AdminLookupListFormsGet.cs" />
     <Compile Include="Models\AdminLookupsGet.cs" />

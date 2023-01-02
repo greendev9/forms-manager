@@ -2692,5 +2692,438 @@ namespace SharedAssemblies.DAL
             string commandText = sb.ToString();
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteStoreQuery<AdminUsersByRoleGet>(commandText, spParams);
         }
+
+        public void UpdateForm(int formId, string formName, string formCode, int active, string identifierUnlockMsg,
+            string coverletterBulletItemText,
+            string approvalInstructions, int supplementPageNo, int supplementPageSectionCount,
+            string supplementPageMsg, string supplementPageFieldMsg, int supplementPageTextCharsMax,
+            string requireUnitNoPattern, int allowMultipleCopies, int hideSections, int authorizeWithoutLogin,
+            string header, string hiddenFormCompleted, int isPropertyAddress,
+            int headerPlain, string notApplicableText)
+        {
+            UpdateForm(formId, 0, formName, formCode, active, identifierUnlockMsg, "", "", coverletterBulletItemText, approvalInstructions, supplementPageNo,
+                supplementPageSectionCount, supplementPageMsg, supplementPageFieldMsg, supplementPageTextCharsMax, requireUnitNoPattern, allowMultipleCopies,
+                hideSections, authorizeWithoutLogin, header, "", hiddenFormCompleted, isPropertyAddress, headerPlain, "", 0, notApplicableText);
+        }
+
+        public void UpdateForm(int formId, int formBuilderUpdate, string formName, string formCode, int active, string identifierUnlockMsg,
+        string sourceFileName, string destinationFileName, string coverletterBulletItemText,
+        string approvalInstructions, int supplementPageNo, int supplementPageSectionCount,
+        string supplementPageMsg, string supplementPageFieldMsg, int supplementPageTextCharsMax,
+        string requireUnitNoPattern, int allowMultipleCopies, int hideSections, int authorizeWithoutLogin,
+        string header, string pdfFontSize, string hiddenFormCompleted, int isPropertyAddress,
+        int headerPlain, string formBuilderJson, int generatesPDF, string notApplicableText)
+        {
+            formName = String.IsNullOrEmpty(formName) ? String.Empty : formName;
+            formCode = String.IsNullOrEmpty(formCode) ? String.Empty : formCode;
+            identifierUnlockMsg = String.IsNullOrEmpty(identifierUnlockMsg) ? String.Empty : identifierUnlockMsg;
+            sourceFileName = String.IsNullOrEmpty(sourceFileName) ? String.Empty : sourceFileName;
+            destinationFileName = String.IsNullOrEmpty(destinationFileName) ? String.Empty : destinationFileName;
+            coverletterBulletItemText = String.IsNullOrEmpty(coverletterBulletItemText) ? String.Empty : coverletterBulletItemText;
+            approvalInstructions = String.IsNullOrEmpty(approvalInstructions) ? String.Empty : approvalInstructions;
+            supplementPageMsg = String.IsNullOrEmpty(supplementPageMsg) ? String.Empty : supplementPageMsg;
+            supplementPageFieldMsg = String.IsNullOrEmpty(supplementPageFieldMsg) ? String.Empty : supplementPageFieldMsg;
+            requireUnitNoPattern = String.IsNullOrEmpty(requireUnitNoPattern) ? String.Empty : requireUnitNoPattern;
+            header = String.IsNullOrEmpty(header) ? String.Empty : header;
+            pdfFontSize = String.IsNullOrEmpty(pdfFontSize) ? String.Empty : pdfFontSize;
+            hiddenFormCompleted = String.IsNullOrEmpty(hiddenFormCompleted) ? String.Empty : hiddenFormCompleted;
+            formBuilderJson = String.IsNullOrEmpty(formBuilderJson) ? String.Empty : formBuilderJson;
+            notApplicableText = String.IsNullOrEmpty(notApplicableText) ? String.Empty : notApplicableText;
+
+            MySqlParameter formIdParam = new MySqlParameter("pFormID", MySqlDbType.Int32);
+            formIdParam.Direction = ParameterDirection.Input;
+            formIdParam.Value = formId;
+
+            MySqlParameter formBldrUpdateParam = new MySqlParameter("pFormBuilderUpdate", MySqlDbType.Int16);
+            formBldrUpdateParam.Direction = ParameterDirection.Input;
+            formBldrUpdateParam.Value = formBuilderUpdate;
+
+            MySqlParameter formNameParam = new MySqlParameter("pFormName", MySqlDbType.String);
+            formNameParam.Direction = ParameterDirection.Input;
+            formNameParam.Value = formName;
+
+            MySqlParameter formCodeParam = new MySqlParameter("pFormCode", MySqlDbType.String);
+            formCodeParam.Direction = ParameterDirection.Input;
+            formCodeParam.Value = formCode;
+
+            MySqlParameter activeParam = new MySqlParameter("pActive", MySqlDbType.Int32);
+            activeParam.Direction = ParameterDirection.Input;
+            activeParam.Value = active;
+
+            MySqlParameter identifierUnlockMsgParam = new MySqlParameter("pIdentifierUnlockMsg", MySqlDbType.String);
+            identifierUnlockMsgParam.Direction = ParameterDirection.Input;
+            identifierUnlockMsgParam.Value = identifierUnlockMsg;
+
+            MySqlParameter sourceFileNameParam = new MySqlParameter("pSourceFileName", MySqlDbType.String);
+            sourceFileNameParam.Direction = ParameterDirection.Input;
+            sourceFileNameParam.Value = sourceFileName;
+
+            MySqlParameter destinationFileNameParam = new MySqlParameter("pDestinationFileName", MySqlDbType.String);
+            destinationFileNameParam.Direction = ParameterDirection.Input;
+            destinationFileNameParam.Value = destinationFileName;
+
+            MySqlParameter coverletterBulletItmTxtParam = new MySqlParameter("pCoverletterBulletItemText", MySqlDbType.String);
+            coverletterBulletItmTxtParam.Direction = ParameterDirection.Input;
+            coverletterBulletItmTxtParam.Value = coverletterBulletItemText;
+
+            MySqlParameter apprvlInstructionsParam = new MySqlParameter("pApprovalInstructions", MySqlDbType.String);
+            apprvlInstructionsParam.Direction = ParameterDirection.Input;
+            apprvlInstructionsParam.Value = approvalInstructions;
+
+            MySqlParameter supplPageNoParam = new MySqlParameter("pSupplementPageNo", MySqlDbType.Int32);
+            supplPageNoParam.Direction = ParameterDirection.Input;
+            supplPageNoParam.Value = supplementPageNo;
+
+            MySqlParameter supplementPageSectionCountParam = new MySqlParameter("pSupplementPageSectionCount", MySqlDbType.Int32);
+            supplementPageSectionCountParam.Direction = ParameterDirection.Input;
+            supplementPageSectionCountParam.Value = supplementPageSectionCount;
+
+            MySqlParameter supplPageMsgParam = new MySqlParameter("pSupplementPageMsg", MySqlDbType.String);
+            supplPageMsgParam.Direction = ParameterDirection.Input;
+            supplPageMsgParam.Value = supplementPageMsg;
+
+            MySqlParameter supplementPageFieldMsgParam = new MySqlParameter("pSupplementPageFieldMsg", MySqlDbType.String);
+            supplementPageFieldMsgParam.Direction = ParameterDirection.Input;
+            supplementPageFieldMsgParam.Value = supplementPageFieldMsg;
+
+            MySqlParameter supplPageTextCharsMaxParam = new MySqlParameter("pSupplementPageTextCharsMax", MySqlDbType.Int32);
+            supplPageTextCharsMaxParam.Direction = ParameterDirection.Input;
+            supplPageTextCharsMaxParam.Value = supplementPageTextCharsMax;
+
+            MySqlParameter requireUnitNoPatternParam = new MySqlParameter("pRequireUnitNoPattern", MySqlDbType.String);
+            requireUnitNoPatternParam.Direction = ParameterDirection.Input;
+            requireUnitNoPatternParam.Value = requireUnitNoPattern;
+
+            MySqlParameter allowMultplCopiesParam = new MySqlParameter("pAllowMultipleCopies", MySqlDbType.Int16);
+            allowMultplCopiesParam.Direction = ParameterDirection.Input;
+            allowMultplCopiesParam.Value = allowMultipleCopies;
+
+            MySqlParameter hideSectionsParam = new MySqlParameter("pHideSections", MySqlDbType.Int16);
+            hideSectionsParam.Direction = ParameterDirection.Input;
+            hideSectionsParam.Value = hideSections;
+
+            MySqlParameter authorizeWithoutLoginParam = new MySqlParameter("pAuthorizeWithoutLogin", MySqlDbType.Int16);
+            authorizeWithoutLoginParam.Direction = ParameterDirection.Input;
+            authorizeWithoutLoginParam.Value = authorizeWithoutLogin;
+
+            MySqlParameter headerParam = new MySqlParameter("pHeader", MySqlDbType.String);
+            headerParam.Direction = ParameterDirection.Input;
+            headerParam.Value = header;
+
+            MySqlParameter pdfFontSizeParam = new MySqlParameter("pPDFFontSize", MySqlDbType.String);
+            pdfFontSizeParam.Direction = ParameterDirection.Input;
+            pdfFontSizeParam.Value = pdfFontSize;
+
+            MySqlParameter hiddenFormCompletedParam = new MySqlParameter("pHiddenFormCompleted", MySqlDbType.String);
+            hiddenFormCompletedParam.Direction = ParameterDirection.Input;
+            hiddenFormCompletedParam.Value = hiddenFormCompleted;
+
+            MySqlParameter isPropertyAddressParam = new MySqlParameter("pIsPropertyAddress", MySqlDbType.Int16);
+            isPropertyAddressParam.Direction = ParameterDirection.Input;
+            isPropertyAddressParam.Value = isPropertyAddress;
+
+            MySqlParameter headerPlainParam = new MySqlParameter("pHeaderPlain", MySqlDbType.Int16);
+            headerPlainParam.Direction = ParameterDirection.Input;
+            headerPlainParam.Value = headerPlain;
+
+            MySqlParameter formBuilderJsonParam = new MySqlParameter("pFormBuilderJson", MySqlDbType.String);
+            formBuilderJsonParam.Direction = ParameterDirection.Input;
+            formBuilderJsonParam.Value = formBuilderJson;
+
+            MySqlParameter genPDFParam = new MySqlParameter("pGeneratesPDF", MySqlDbType.Int16);
+            genPDFParam.Direction = ParameterDirection.Input;
+            genPDFParam.Value = generatesPDF;
+
+            MySqlParameter naTextParam = new MySqlParameter("pNotApplicableText", MySqlDbType.String);
+            naTextParam.Direction = ParameterDirection.Input;
+            naTextParam.Value = notApplicableText;
+
+            MySqlParameter[] spParams = new MySqlParameter[] {
+                formIdParam,
+                formBldrUpdateParam,
+                formNameParam,
+                formCodeParam,
+                activeParam,
+                identifierUnlockMsgParam,
+                sourceFileNameParam,
+                destinationFileNameParam,
+                coverletterBulletItmTxtParam,
+                apprvlInstructionsParam,
+                supplPageNoParam,
+                supplementPageSectionCountParam,
+                supplPageMsgParam,
+                supplementPageFieldMsgParam,
+                supplPageTextCharsMaxParam,
+                requireUnitNoPatternParam,
+                allowMultplCopiesParam,
+                hideSectionsParam,
+                authorizeWithoutLoginParam,
+                headerParam,
+                pdfFontSizeParam,
+                hiddenFormCompletedParam,
+                isPropertyAddressParam,
+                headerPlainParam,
+                formBuilderJsonParam,
+                genPDFParam,
+                naTextParam
+            };
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("CALL admin_formupdate(@pFormId, @pFormBuilderUpdate, @pFormName, @pFormCode, @pActive, @pIdentifierUnlockMsg, @pSourceFileName, @pDestinationFileName, @pCoverletterBulletItemText, @pApprovalInstructions, @pSupplementPageNo, @pSupplementPageSectionCount, @pSupplementPageMsg, @pSupplementPageFieldMsg, @pSupplementPageTextCharsMax, @pRequireUnitNoPattern, @pAllowMultipleCopies, @pHideSections, @pAuthorizeWithoutLogin, @pHeader, @pPDFFontSize, @pHiddenFormCompleted, @pIsPropertyAddress, @pHeaderPlain, @pFormBuilderJson, @pGeneratesPDF, @pNotApplicableText)");
+
+            string commandText = sb.ToString();
+            this.Database.ExecuteSqlCommand(commandText, spParams);
+        }
+
+        public int AddForm(int customerId, string formName, string formCode, string identifierUnlockMsg,
+            string coverletterBulletItemText,
+            string approvalInstructions, int supplementPageNo, int supplementPageSectionCount,
+            string supplementPageMsg, string supplementPageFieldMsg, int supplementPageTextCharsMax,
+            string requireUnitNoPattern, int allowMultipleCopies, int hideSections, int authorizeWithoutLogin,
+            string header, string hiddenFormCompleted, int isPropertyAddress,
+            int headerPlain, string notApplicableText)
+        {
+            var sessionKey = RandomHelper.GenerateGUID();
+            return AddForm(customerId, formName, formCode, identifierUnlockMsg, "", "", coverletterBulletItemText,
+            approvalInstructions, supplementPageNo, supplementPageSectionCount, supplementPageMsg, supplementPageFieldMsg, supplementPageTextCharsMax,
+            requireUnitNoPattern, allowMultipleCopies, hideSections, authorizeWithoutLogin, header, "", hiddenFormCompleted, isPropertyAddress,
+            headerPlain, "", 0, notApplicableText, sessionKey);
+        }
+
+        public int AddForm(int customerId, string formName, string formCode, string identifierUnlockMsg,
+            string sourceFileName, string destinationFileName, string coverletterBulletItemText,
+            string approvalInstructions, int supplementPageNo, int supplementPageSectionCount,
+            string supplementPageMsg, string supplementPageFieldMsg, int supplementPageTextCharsMax,
+            string requireUnitNoPattern, int allowMultipleCopies, int hideSections, int authorizeWithoutLogin,
+            string header, string pdfFontSize, string hiddenFormCompleted, int isPropertyAddress,
+            int headerPlain, string formBuilderJson, int generatesPDF, string notApplicableText)
+        {
+            var sessionKey = RandomHelper.GenerateGUID();
+            return AddForm(customerId, formName, formCode, identifierUnlockMsg, sourceFileName, destinationFileName, coverletterBulletItemText,
+            approvalInstructions, supplementPageNo, supplementPageSectionCount, supplementPageMsg, supplementPageFieldMsg, supplementPageTextCharsMax,
+            requireUnitNoPattern, allowMultipleCopies, hideSections, authorizeWithoutLogin, header, pdfFontSize, hiddenFormCompleted, isPropertyAddress,
+            headerPlain, formBuilderJson, generatesPDF, notApplicableText, sessionKey);
+        }
+
+        public int AddForm(int customerId, string formName, string formCode, string identifierUnlockMsg,
+        string sourceFileName, string destinationFileName, string coverletterBulletItemText,
+        string approvalInstructions, int supplementPageNo, int supplementPageSectionCount,
+        string supplementPageMsg, string supplementPageFieldMsg, int supplementPageTextCharsMax,
+        string requireUnitNoPattern, int allowMultipleCopies, int hideSections, int authorizeWithoutLogin,
+        string header, string pdfFontSize, string hiddenFormCompleted, int isPropertyAddress,
+        int headerPlain, string formBuilderJson, int generatesPDF, string notApplicableText, string sessionKey)
+        {
+            formName = String.IsNullOrEmpty(formName) ? String.Empty : formName;
+            formCode = String.IsNullOrEmpty(formCode) ? String.Empty : formCode;
+            identifierUnlockMsg = String.IsNullOrEmpty(identifierUnlockMsg) ? String.Empty : identifierUnlockMsg;
+            sourceFileName = String.IsNullOrEmpty(sourceFileName) ? String.Empty : sourceFileName;
+            destinationFileName = String.IsNullOrEmpty(destinationFileName) ? String.Empty : destinationFileName;
+            coverletterBulletItemText = String.IsNullOrEmpty(coverletterBulletItemText) ? String.Empty : coverletterBulletItemText;
+            approvalInstructions = String.IsNullOrEmpty(approvalInstructions) ? String.Empty : approvalInstructions;
+            supplementPageMsg = String.IsNullOrEmpty(supplementPageMsg) ? String.Empty : supplementPageMsg;
+            supplementPageFieldMsg = String.IsNullOrEmpty(supplementPageFieldMsg) ? String.Empty : supplementPageFieldMsg;
+            requireUnitNoPattern = String.IsNullOrEmpty(requireUnitNoPattern) ? String.Empty : requireUnitNoPattern;
+            header = String.IsNullOrEmpty(header) ? String.Empty : header;
+            pdfFontSize = String.IsNullOrEmpty(pdfFontSize) ? String.Empty : pdfFontSize;
+            hiddenFormCompleted = String.IsNullOrEmpty(hiddenFormCompleted) ? String.Empty : hiddenFormCompleted;
+            formBuilderJson = String.IsNullOrEmpty(formBuilderJson) ? String.Empty : formBuilderJson;
+            notApplicableText = String.IsNullOrEmpty(notApplicableText) ? String.Empty : notApplicableText;
+            sessionKey = String.IsNullOrEmpty(sessionKey) ? String.Empty : sessionKey;
+
+            MySqlParameter customerIdParam = new MySqlParameter("pCustomerID", MySqlDbType.Int32);
+            customerIdParam.Direction = ParameterDirection.Input;
+            customerIdParam.Value = customerId;
+
+            MySqlParameter formNameParam = new MySqlParameter("pFormName", MySqlDbType.String);
+            formNameParam.Direction = ParameterDirection.Input;
+            formNameParam.Value = formName;
+
+            MySqlParameter formCodeParam = new MySqlParameter("pFormCode", MySqlDbType.String);
+            formCodeParam.Direction = ParameterDirection.Input;
+            formCodeParam.Value = formCode;
+
+            MySqlParameter identifierUnlockMsgParam = new MySqlParameter("pIdentifierUnlockMsg", MySqlDbType.String);
+            identifierUnlockMsgParam.Direction = ParameterDirection.Input;
+            identifierUnlockMsgParam.Value = identifierUnlockMsg;
+
+            MySqlParameter sourceFileNameParam = new MySqlParameter("pSourceFileName", MySqlDbType.String);
+            sourceFileNameParam.Direction = ParameterDirection.Input;
+            sourceFileNameParam.Value = sourceFileName;
+
+            MySqlParameter destinationFileNameParam = new MySqlParameter("pDestinationFileName", MySqlDbType.String);
+            destinationFileNameParam.Direction = ParameterDirection.Input;
+            destinationFileNameParam.Value = destinationFileName;
+
+            MySqlParameter coverletterBulletItmTxtParam = new MySqlParameter("pCoverletterBulletItemText", MySqlDbType.String);
+            coverletterBulletItmTxtParam.Direction = ParameterDirection.Input;
+            coverletterBulletItmTxtParam.Value = coverletterBulletItemText;
+
+            MySqlParameter apprvlInstructionsParam = new MySqlParameter("pApprovalInstructions", MySqlDbType.String);
+            apprvlInstructionsParam.Direction = ParameterDirection.Input;
+            apprvlInstructionsParam.Value = approvalInstructions;
+
+            MySqlParameter supplPageNoParam = new MySqlParameter("pSupplementPageNo", MySqlDbType.Int32);
+            supplPageNoParam.Direction = ParameterDirection.Input;
+            supplPageNoParam.Value = supplementPageNo;
+
+            MySqlParameter supplementPageSectionCountParam = new MySqlParameter("pSupplementPageSectionCount", MySqlDbType.Int32);
+            supplementPageSectionCountParam.Direction = ParameterDirection.Input;
+            supplementPageSectionCountParam.Value = supplementPageSectionCount;
+
+            MySqlParameter supplPageMsgParam = new MySqlParameter("pSupplementPageMsg", MySqlDbType.String);
+            supplPageMsgParam.Direction = ParameterDirection.Input;
+            supplPageMsgParam.Value = supplementPageMsg;
+
+            MySqlParameter supplementPageFieldMsgParam = new MySqlParameter("pSupplementPageFieldMsg", MySqlDbType.String);
+            supplementPageFieldMsgParam.Direction = ParameterDirection.Input;
+            supplementPageFieldMsgParam.Value = supplementPageFieldMsg;
+
+            MySqlParameter supplPageTextCharsMaxParam = new MySqlParameter("pSupplementPageTextCharsMax", MySqlDbType.Int32);
+            supplPageTextCharsMaxParam.Direction = ParameterDirection.Input;
+            supplPageTextCharsMaxParam.Value = supplementPageTextCharsMax;
+
+            MySqlParameter requireUnitNoPatternParam = new MySqlParameter("pRequireUnitNoPattern", MySqlDbType.String);
+            requireUnitNoPatternParam.Direction = ParameterDirection.Input;
+            requireUnitNoPatternParam.Value = requireUnitNoPattern;
+
+            MySqlParameter allowMultplCopiesParam = new MySqlParameter("pAllowMultipleCopies", MySqlDbType.Int16);
+            allowMultplCopiesParam.Direction = ParameterDirection.Input;
+            allowMultplCopiesParam.Value = allowMultipleCopies;
+
+            MySqlParameter hideSectionsParam = new MySqlParameter("pHideSections", MySqlDbType.Int16);
+            hideSectionsParam.Direction = ParameterDirection.Input;
+            hideSectionsParam.Value = hideSections;
+
+            MySqlParameter authorizeWithoutLoginParam = new MySqlParameter("pAuthorizeWithoutLogin", MySqlDbType.Int16);
+            authorizeWithoutLoginParam.Direction = ParameterDirection.Input;
+            authorizeWithoutLoginParam.Value = authorizeWithoutLogin;
+
+            MySqlParameter headerParam = new MySqlParameter("pHeader", MySqlDbType.String);
+            headerParam.Direction = ParameterDirection.Input;
+            headerParam.Value = header;
+
+            MySqlParameter pdfFontSizeParam = new MySqlParameter("pPDFFontSize", MySqlDbType.String);
+            pdfFontSizeParam.Direction = ParameterDirection.Input;
+            pdfFontSizeParam.Value = pdfFontSize;
+
+            MySqlParameter hiddenFormCompletedParam = new MySqlParameter("pHiddenFormCompleted", MySqlDbType.String);
+            hiddenFormCompletedParam.Direction = ParameterDirection.Input;
+            hiddenFormCompletedParam.Value = hiddenFormCompleted;
+
+            MySqlParameter isPropertyAddressParam = new MySqlParameter("pIsPropertyAddress", MySqlDbType.Int16);
+            isPropertyAddressParam.Direction = ParameterDirection.Input;
+            isPropertyAddressParam.Value = isPropertyAddress;
+
+            MySqlParameter headerPlainParam = new MySqlParameter("pHeaderPlain", MySqlDbType.Int16);
+            headerPlainParam.Direction = ParameterDirection.Input;
+            headerPlainParam.Value = headerPlain;
+
+            MySqlParameter formBuilderJsonParam = new MySqlParameter("pFormBuilderJson", MySqlDbType.String);
+            formBuilderJsonParam.Direction = ParameterDirection.Input;
+            formBuilderJsonParam.Value = formBuilderJson;
+
+            MySqlParameter genPDFParam = new MySqlParameter("pGeneratesPDF", MySqlDbType.Int16);
+            genPDFParam.Direction = ParameterDirection.Input;
+            genPDFParam.Value = generatesPDF;
+
+            MySqlParameter naTextParam = new MySqlParameter("pNotApplicableText", MySqlDbType.String);
+            naTextParam.Direction = ParameterDirection.Input;
+            naTextParam.Value = notApplicableText;
+
+            MySqlParameter sessionKyParam = new MySqlParameter("pSessionKey", MySqlDbType.String);
+            sessionKyParam.Direction = ParameterDirection.Input;
+            sessionKyParam.Value = sessionKey;
+
+            MySqlParameter[] spParams = new MySqlParameter[] {
+                customerIdParam,
+                formNameParam,
+                formCodeParam,
+                identifierUnlockMsgParam,
+                sourceFileNameParam,
+                destinationFileNameParam,
+                coverletterBulletItmTxtParam,
+                apprvlInstructionsParam,
+                supplPageNoParam,
+                supplementPageSectionCountParam,
+                supplPageMsgParam,
+                supplementPageFieldMsgParam,
+                supplPageTextCharsMaxParam,
+                requireUnitNoPatternParam,
+                allowMultplCopiesParam,
+                hideSectionsParam,
+                authorizeWithoutLoginParam,
+                headerParam,
+                pdfFontSizeParam,
+                hiddenFormCompletedParam,
+                isPropertyAddressParam,
+                headerPlainParam,
+                formBuilderJsonParam,
+                genPDFParam,
+                naTextParam,
+                sessionKyParam
+            };
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("CALL admin_formadd(@pCustomerId, @pFormName, @pFormCode, @pIdentifierUnlockMsg, @pSourceFileName, @pDestinationFileName, @pCoverletterBulletItemText, @pApprovalInstructions, @pSupplementPageNo, @pSupplementPageSectionCount, @pSupplementPageMsg, @pSupplementPageFieldMsg, @pSupplementPageTextCharsMax, @pRequireUnitNoPattern, @pAllowMultipleCopies, @pHideSections, @pAuthorizeWithoutLogin, @pHeader, @pPDFFontSize, @pHiddenFormCompleted, @pIsPropertyAddress, @pHeaderPlain, @pFormBuilderJson, @pGeneratesPDF, @pNotApplicableText, @pSessionKey)");
+
+            string commandText = sb.ToString();
+            this.Database.ExecuteSqlCommand(commandText, spParams);
+
+            var result = Convert.ToInt32(ClientHelper.GetSessionInsertOutput(sessionKey));
+            return result;
+        }
+
+        public void FormDelete(int formId)
+        {
+            MySqlParameter formIdParam = new MySqlParameter("vFormID", MySqlDbType.Int32);
+            formIdParam.Direction = ParameterDirection.Input;
+            formIdParam.Value = formId;
+
+            MySqlParameter[] spParams = new MySqlParameter[] {
+                formIdParam
+            };
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("CALL deleteform(@vFormID)");
+
+            string commandText = sb.ToString();
+            this.Database.ExecuteSqlCommand(commandText, spParams);
+        }
+
+        public virtual ObjectResult<AdminFormsGet> GetForms(Nullable<int> clientId)
+        {
+            MySqlParameter userIDParam = new MySqlParameter("vClientID", MySqlDbType.Int32);
+            userIDParam.Direction = ParameterDirection.Input;
+            userIDParam.Value = clientId;
+
+            MySqlParameter[] spParams = new MySqlParameter[] {
+                userIDParam
+            };
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("CALL admin_formsget(@vClientID)");
+
+            string commandText = sb.ToString();
+
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteStoreQuery<AdminFormsGet>(commandText, spParams);
+        }
+
+        public virtual ObjectResult<AdminFormGet> GetForm(Nullable<int> formId)
+        {
+            MySqlParameter formIdParam = new MySqlParameter("vFormID", MySqlDbType.Int32);
+            formIdParam.Direction = ParameterDirection.Input;
+            formIdParam.Value = formId;
+
+            MySqlParameter[] spParams = new MySqlParameter[] {
+                formIdParam
+            };
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("CALL admin_formget(@vFormID)");
+
+            string commandText = sb.ToString();
+
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteStoreQuery<AdminFormGet>(commandText, spParams);
+        }
     }
 }
