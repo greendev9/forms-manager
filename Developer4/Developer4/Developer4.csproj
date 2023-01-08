@@ -2354,6 +2354,8 @@
     <Content Include="Views\UserSetup\Users.cshtml" />
     <Content Include="Views\UserSetup\UserUploadTool.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\ApplicationSetup\Forms.cshtml" />
+    <Content Include="Views\ApplicationSetup\ActionForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

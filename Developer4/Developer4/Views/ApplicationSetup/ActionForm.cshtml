@@ -1,0 +1,389 @@
+﻿@model SharedAssemblies.Models.AdminFormGet
+@using SharedAssemblies.Content.AppCode;
+@{
+    ViewBag.Title = ViewBag.Page;
+
+    string formAction = "";
+    if (ViewBag.Page == "Add Form") { formAction = "AddForm"; }
+    else { formAction = "UpdateForm"; }
+
+    Boolean UsesPortal = true;
+    Boolean ShowGovernmentFormConfigs = true;
+    Boolean UsesRealtorFormsConfigs = true;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <form asp-action="@formAction" method="post">
+                    <div class="card-body">
+                        <h4 class="header-title">@ViewBag.Page</h4>
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.ID)
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FormCode, htmlAttributes: new { @class = "col-form-label" }) <label class="text-danger">*</label>
+                            @Html.EditorFor(model => model.FormCode, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.FormCode) } })
+                            @Html.ValidationMessageFor(model => model.FormCode, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FormName, htmlAttributes: new { @class = "col-form-label" }) <label class="text-danger">*</label>
+                            @Html.EditorFor(model => model.FormName, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.FormName) } })
+                            @Html.ValidationMessageFor(model => model.FormName, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.NotApplicableText, htmlAttributes: new { @class = "col-form-label" }) <label class="text-danger">*</label>
+                            @Html.EditorFor(model => model.NotApplicableText, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.NotApplicableText) } })
+                            @Html.ValidationMessageFor(model => model.NotApplicableText, "", new { @class = "text-danger" })
+                        </div>
+                        @if (ViewBag.Page == "Update Form")
+                        {
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.Active)
+                                <div class="custom-control custom-switch">
+                                    @{
+                                        var activeChecked = Model.Active == 1 ? " checked==\"checked\"" : "";
+                                    }
+                                    <input type="checkbox" class="custom-control-input" onchange=isActive() id="chkActive" @activeChecked />
+                                    <label class="custom-control-label" for="chkActive">@Html.DisplayNameFor(model => model.Active)</label>
+                                </div>
+                            </div>
+                        }
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Header, htmlAttributes: new { @class = "col-form-label" })
+                            @Html.EditorFor(model => model.Header, new { htmlAttributes = new { @origVal = Model.Header, @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.Header) } })
+                            @Html.ValidationMessageFor(model => model.Header, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.HiddenFor(model => model.HeaderPlain)
+                            <div class="custom-control custom-switch">
+                                @{
+                                    var headerPlainChecked = Model.HeaderPlain == 1 ? " checked==\"checked\"" : "";
+                                }
+                                <input type="checkbox" class="custom-control-input" onchange=isHeaderPlain() id="chkHeaderPlain" @headerPlainChecked />
+                                <label class="custom-control-label" for="chkHeaderPlain">@Html.DisplayNameFor(model => model.HeaderPlain)</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.HiddenFormCompleted, htmlAttributes: new { @class = "col-form-label" })
+                            @Html.EditorFor(model => model.HiddenFormCompleted, new { htmlAttributes = new { @origVal = Model.HiddenFormCompleted, @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.HiddenFormCompleted) } })
+                            @Html.ValidationMessageFor(model => model.HiddenFormCompleted, "", new { @class = "text-danger" })
+                        </div>
+                        @if (UsesPortal)
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IdentifierUnlockMsg, htmlAttributes: new { @class = "col-form-label" })
+                                @Html.EditorFor(model => model.IdentifierUnlockMsg, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.IdentifierUnlockMsg) } })
+                                @Html.ValidationMessageFor(model => model.IdentifierUnlockMsg, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ApprovalInstructions, htmlAttributes: new { @class = "col-form-label" })
+                            @Html.EditorFor(model => model.ApprovalInstructions, new { htmlAttributes = new { @origVal = Model.ApprovalInstructions, @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.ApprovalInstructions) } })
+                            @Html.ValidationMessageFor(model => model.ApprovalInstructions, "", new { @class = "text-danger" })
+                        </div>
+                        @if (UsesPortal && ShowGovernmentFormConfigs)
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SupplementPageMsg, htmlAttributes: new { @class = "col-form-label" })
+                                @Html.EditorFor(model => model.SupplementPageMsg, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.SupplementPageMsg) } })
+                                @Html.ValidationMessageFor(model => model.SupplementPageMsg, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        @if (UsesPortal)
+                        {
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.AllowMultipleCopies)
+                                <div class="custom-control custom-switch">
+                                    @{
+                                        var allowMultipleCopiesChecked = Model.AllowMultipleCopies == 1 ? " checked==\"checked\"" : "";
+                                    }
+                                    <input type="checkbox" class="custom-control-input" onchange=isAllowMultipleCopies() id="chkAllowMultipleCopies" @allowMultipleCopiesChecked />
+                                    <label class="custom-control-label" for="chkAllowMultipleCopies">@Html.DisplayNameFor(model => model.AllowMultipleCopies)</label>
+                                </div>
+                            </div>
+                        }
+                        @if (UsesRealtorFormsConfigs)
+                        {
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.IsPropertyAddress)
+                                <div class="custom-control custom-switch">
+                                    @{
+                                        var isPropertyAddressChecked = Model.IsPropertyAddress == 1 ? " checked==\"checked\"" : "";
+                                    }
+                                    <input type="checkbox" class="custom-control-input" onchange=isIsPropertyAddress() id="chkIsPropertyAddress" @isPropertyAddressChecked />
+                                    <label class="custom-control-label" for="chkIsPropertyAddress">@Html.DisplayNameFor(model => model.IsPropertyAddress)</label>
+                                </div>
+                            </div>
+                        }
+                        <div class="form-group">
+                            @Html.HiddenFor(model => model.AuthorizeWithoutLogin)
+                            <div class="custom-control custom-switch">
+                                @{
+                                    var authorizeWithoutLoginChecked = Model.AuthorizeWithoutLogin == 1 ? " checked==\"checked\"" : "";
+                                    if (!UsesPortal)
+                                    {
+                                        authorizeWithoutLoginChecked = " disabled checked==\"checked\"";
+                                    }
+                                }
+                                <input type="checkbox" class="custom-control-input" onchange=isAuthorizeWithoutLogin() id="chkAuthorizeWithoutLogin" @authorizeWithoutLoginChecked />
+                                <label class="custom-control-label" for="chkAuthorizeWithoutLogin">@Html.DisplayNameFor(model => model.AuthorizeWithoutLogin)</label>
+                            </div>
+                        </div>
+                        @if (ViewBag.Page == "Update Form")
+                        {
+                            <div class="form-group">
+                                @Html.HiddenFor(model => model.HideSections)
+                                <div class="custom-control custom-switch">
+                                    @{
+                                        var hideSectionsChecked = Model.HideSections == 1 ? " checked==\"checked\"" : "";
+                                    }
+                                    <input type="checkbox" class="custom-control-input" onchange=isHideSections() id="chkHideSections" @hideSectionsChecked />
+                                    <label class="custom-control-label" for="chkHideSections">@Html.DisplayNameFor(model => model.HideSections)</label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="card-body">
+                        <h4 class="header-title">PDF Generation</h4>
+                        @if (UsesPortal && ShowGovernmentFormConfigs)
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.CoverletterBulletItemText, htmlAttributes: new { @class = "col-form-label" })
+                                @Html.EditorFor(model => model.CoverletterBulletItemText, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.CoverletterBulletItemText) } })
+                                @Html.ValidationMessageFor(model => model.CoverletterBulletItemText, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        @if (UsesPortal && ShowGovernmentFormConfigs)
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SupplementPageNo, htmlAttributes: new { @class = "col-form-label" })
+                                @Html.EditorFor(model => model.SupplementPageNo, new { htmlAttributes = new { @class = "form-control", @placeholder = "" } })
+                                @Html.ValidationMessageFor(model => model.SupplementPageNo, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        @if (UsesPortal && ShowGovernmentFormConfigs)
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SupplementPageSectionCount, htmlAttributes: new { @class = "col-form-label" })
+                                @Html.EditorFor(model => model.SupplementPageSectionCount, new { htmlAttributes = new { @class = "form-control", @placeholder = "" } })
+                                @Html.ValidationMessageFor(model => model.SupplementPageSectionCount, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        @if (UsesPortal && ShowGovernmentFormConfigs)
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SupplementPageFieldMsg, htmlAttributes: new { @class = "col-form-label" })
+                                @Html.EditorFor(model => model.SupplementPageFieldMsg, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.SupplementPageFieldMsg) } })
+                                @Html.ValidationMessageFor(model => model.SupplementPageFieldMsg, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                        @if (UsesPortal && ShowGovernmentFormConfigs)
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SupplementPageTextCharsMax, htmlAttributes: new { @class = "col-form-label" })
+                                @Html.EditorFor(model => model.SupplementPageTextCharsMax, new { htmlAttributes = new { @class = "form-control", @placeholder = "" } })
+                                @Html.ValidationMessageFor(model => model.SupplementPageTextCharsMax, "", new { @class = "text-danger" })
+                            </div>
+                        }
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group mb-0">
+                            <button type="submit" class="btn btn-info waves-effect waves-light"><i class="fa fa-check"></i> Save</button>
+                            @if (ViewBag.Page == "Update Form")
+                            {
+                                <a id="btnDelete" class="btn btn-danger waves-effect waves-light text-white">Delete</a>
+                            }
+                            <a href="~/ApplicationSetup/Forms" class="btn btn-dark waves-effect waves-light">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <link href="~/assets/libs/summernote/summernote-bs4.min.css" rel="stylesheet" type="text/css" />
+    <script src="~/assets/libs/summernote/summernote-bs4.min.js"></script>
+    <script src="~/assets/js/pages/form-summernote.init.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if ($("#Active").val() == 1) { $("#chkActive").prop("checked", true); }
+            else { $("#chkActive").prop("checked", false); }
+
+            if ($("#HeaderPlain").val() == 1) { $("#chkHeaderPlain").prop("checked", true); }
+            else { $("#chkHeaderPlain").prop("checked", false); }
+
+            if ($("#AllowMultipleCopies").val() == 1) { $("#chkAllowMultipleCopies").prop("checked", true); }
+            else { $("#chkAllowMultipleCopies").prop("checked", false); }
+
+            if ($("#IsPropertyAddress").val() == 1) { $("#chkIsPropertyAddress").prop("checked", true); }
+            else { $("#chkIsPropertyAddress").prop("checked", false); }
+
+            if ($("#AuthorizeWithoutLogin").val() == 1) { $("#chkAuthorizeWithoutLogin").prop("checked", true); }
+            else { $("#chkAuthorizeWithoutLogin").prop("checked", false); }
+
+            if ($("#HideSections").val() == 1) { $("#chkHideSections").prop("checked", true); }
+            else { $("#chkHideSections").prop("checked", false); }
+
+            isActive();
+            isHeaderPlain();
+            isAllowMultipleCopies();
+            isIsPropertyAddress();
+            isAuthorizeWithoutLogin();
+            isHideSections();
+
+            $('#Header').on("summernote.change", function (e) {
+                textAreaChange($(this), true);
+            });
+            $('#HiddenFormCompleted').on("summernote.change", function (e) {
+                textAreaChange($(this), true);
+            });
+            $('#ApprovalInstructions').on("summernote.change", function (e) {
+                textAreaChange($(this), true);
+            });
+
+            $(".note-btn-bold").on("click", function (e) {
+                setTimeout(function () {
+                    textAreaChange($('#Header'));
+                    textAreaChange($('#HiddenFormCompleted'));
+                    textAreaChange($('#ApprovalInstructions'));
+                }, 1000);
+            });
+        });
+
+        function updateHtmlAllowedArea(obj, newHtml) {
+            obj.summernote('code', newHtml);
+        }
+
+        function textAreaChange(obj, summerNoteChange) {
+            summerNoteChange = summerNoteChange || false;
+
+            var origVal = obj.attr("origVal");
+            var currentVal = Trim(obj.val());
+
+            if (!summerNoteChange) {
+                currentVal = Trim(obj.summernote('code'));
+                var newVal = Replace(currentVal, "<b>", "<span style='font-weight: bold;'>");
+                newVal = Replace(newVal, "</b>", "</span>");
+                newVal = Replace(newVal, "<strong>", "<span style='font-weight: bold;'>");
+                newVal = Replace(newVal, "</strong>", "</span>");
+                updateHtmlAllowedArea(obj, newVal);
+            }
+        }
+
+        $('#Header').summernote({
+            placeholder: '',
+            onPaste: function (e) {
+                var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+                e.preventDefault();
+                document.execCommand('insertText', false, bufferText);
+            },
+            lineWrapping: false,
+            height: 200,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'italic', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link']],
+                ['view', ['fullscreen', 'codeview']]
+            ]
+        });
+
+        $('#HiddenFormCompleted').summernote({
+            placeholder: '',
+            onPaste: function (e) {
+                var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+                e.preventDefault();
+                document.execCommand('insertText', false, bufferText);
+            },
+            lineWrapping: false,
+            height: 200,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'italic', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link']],
+                ['view', ['fullscreen', 'codeview']]
+            ]
+        });
+
+        $('#ApprovalInstructions').summernote({
+            placeholder: '',
+            onPaste: function (e) {
+                var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+                e.preventDefault();
+                document.execCommand('insertText', false, bufferText);
+            },
+            lineWrapping: false,
+            height: 200,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'italic', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link']],
+                ['view', ['fullscreen', 'codeview']]
+            ]
+        });
+
+        function updateHtmlAllowedArea(obj, newHtml) {
+            obj.summernote('code', newHtml);
+        }
+
+        function isActive() {
+            if ($("#chkActive").is(":checked")) { $("#Active").val(1); }
+            else { $("#Active").val(0); }
+        }
+        function isHeaderPlain() {
+            if ($("#chkHeaderPlain").is(":checked")) { $("#HeaderPlain").val(1); }
+            else { $("#HeaderPlain").val(0); }
+        }
+        function isAllowMultipleCopies() {
+            if ($("#chkAllowMultipleCopies").is(":checked")) { $("#AllowMultipleCopies").val(1); }
+            else { $("#AllowMultipleCopies").val(0); }
+        }
+        function isIsPropertyAddress() {
+            if ($("#chkIsPropertyAddress").is(":checked")) { $("#IsPropertyAddress").val(1); }
+            else { $("#IsPropertyAddress").val(0); }
+        }
+        function isAuthorizeWithoutLogin() {
+            if ($("#chkAuthorizeWithoutLogin").is(":checked")) { $("#AuthorizeWithoutLogin").val(1); }
+            else { $("#AuthorizeWithoutLogin").val(0); }
+        }
+        function isHideSections() {
+            if ($("#chkHideSections").is(":checked")) { $("#HideSections").val(1); }
+            else { $("#HideSections").val(0); }
+        }
+    </script>
+
+    @if (ViewBag.Page == "Update Form")
+    {
+        <script type="text/javascript">
+            $('#btnDelete').click(function () {
+                var confMsg = confirm("Are you sure you want to delete this form?");
+                if (confMsg == true) {
+                    var url = '@Url.Content("~/")' + "ApplicationSetup/DeleteForm";
+                    $.post(url, { id: $("#ID").val() }, function (data) {
+                        if (data != true) {
+                            formilaeAlert("Could not delete the form. Please try again and contact the web administrator if this problem persists.");
+                        }
+                        else {
+                            window.location.href = '@Url.Content("~/")' + "ApplicationSetup/Forms";
+                        }
+                    });
+                }
+            });
+        </script>
+    }
+}

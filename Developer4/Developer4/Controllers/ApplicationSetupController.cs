@@ -1406,5 +1406,162 @@ namespace Developer4.Controllers
             TempData["smsg"] = "The changes have been made successfully.";
             return Json(true);
         }
+
+        public ActionResult Forms()
+        {
+            using (var db1 = new MyDbContext())
+            {
+                var model = db1.GetForms(Convert.ToInt32(Session["userID"])).ToList();
+                if (model == null)
+                {
+                    return RedirectToAction("Notfound", "Home");
+                }
+                return View(model);
+            }
+        }
+
+        public ActionResult AddForm()
+        {
+            var model = new AdminFormGet()
+            {
+                Active = 1,
+            };
+            
+            ViewBag.Page = "Add Form";
+            return View("ActionForm", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddForm(AdminFormGet model)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var db1 = new MyDbContext())
+                {
+                    db1.AddForm(
+                        Convert.ToInt32(Session["CustomerID"]),
+                        model.FormName ?? "",
+                        model.FormCode ?? "",
+                        model.IdentifierUnlockMsg ?? "",
+                        model.CoverletterBulletItemText ?? "",
+                        model.ApprovalInstructions ?? "",
+                        model.SupplementPageNo ?? 0,
+                        model.SupplementPageSectionCount ?? 0,
+                        model.SupplementPageMsg ?? "",
+                        model.SupplementPageFieldMsg ?? "",
+                        model.SupplementPageTextCharsMax ?? 0,
+                        "",
+                        model.AllowMultipleCopies,
+                        0,
+                        model.AuthorizeWithoutLogin,
+                        model.Header ?? "",
+                        model.HiddenFormCompleted ?? "",
+                        model.IsPropertyAddress,
+                        model.HeaderPlain,
+                        model.NotApplicableText ?? ""
+                    );
+
+                    return RedirectToAction(nameof(Forms), new { smsg = "The changes have been made successfully." });
+                }
+            }
+            
+            ViewBag.Page = "Add Form";
+            return View("ActionForm", model);
+        }
+
+        public ActionResult UpdateForm(int? id)
+        {
+            if (id == null) { return HttpNotFound(); }
+
+            var form = db.GetForm(id).FirstOrDefault();
+            if (form == null) { return HttpNotFound(); }
+
+            var model = new AdminFormGet()
+            {
+                ID = form.ID,
+                FormName = form.FormName,
+                FormCode = form.FormCode,
+                Active = form.Active,
+                IdentifierUnlockMsg = form.IdentifierUnlockMsg,
+                CoverletterBulletItemText = form.CoverletterBulletItemText,
+                ApprovalInstructions = form.ApprovalInstructions,
+                SupplementPageNo = form.SupplementPageNo,
+                SupplementPageSectionCount = form.SupplementPageSectionCount,
+                SupplementPageMsg = form.SupplementPageMsg,
+                SupplementPageFieldMsg = form.SupplementPageFieldMsg,
+                SupplementPageTextCharsMax = form.SupplementPageTextCharsMax,
+                RequireUnitNoPattern = form.RequireUnitNoPattern,
+                AllowMultipleCopies = form.AllowMultipleCopies,
+                HideSections = form.HideSections,
+                AuthorizeWithoutLogin = form.AuthorizeWithoutLogin,
+                Header = form.Header,
+                HiddenFormCompleted = form.HiddenFormCompleted,
+                IsPropertyAddress = form.IsPropertyAddress,
+                HeaderPlain = form.HeaderPlain,
+                NotApplicableText = form.NotApplicableText
+            };
+            
+            ViewBag.Page = "Update Form";
+            return View("ActionForm", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateForm(int id, AdminFormGet model)
+        {
+            if (id != model.ID) { return HttpNotFound(); }
+
+            if (ModelState.IsValid)
+            {
+                using (var db1 = new MyDbContext())
+                {
+                    var form = db1.GetForm(id).FirstOrDefault();
+                    if (form == null) { return HttpNotFound(); }
+
+                    db1.UpdateForm(
+                        model.ID,
+                        model.FormName,
+                        model.FormCode,
+                        model.Active,
+                        model.IdentifierUnlockMsg,
+                        model.CoverletterBulletItemText,
+                        model.ApprovalInstructions,
+                        model.SupplementPageNo ?? 0,
+                        model.SupplementPageSectionCount ?? 0,
+                        model.SupplementPageMsg,
+                        model.SupplementPageFieldMsg,
+                        model.SupplementPageTextCharsMax ?? 0,
+                        model.RequireUnitNoPattern,
+                        model.AllowMultipleCopies,
+                        model.HideSections,
+                        model.AuthorizeWithoutLogin,
+                        model.Header,
+                        model.HiddenFormCompleted,
+                        model.IsPropertyAddress,
+                        model.HeaderPlain,
+                        model.NotApplicableText
+                    );
+
+                    return RedirectToAction(nameof(Forms), new { smsg = "The changes have been made successfully." });
+                }
+            }
+            
+            ViewBag.Page = "Update Form";
+            return View("ActionForm", model);
+        }
+
+        public JsonResult DeleteForm(int id)
+        {
+            using (var db1 = new MyDbContext())
+            {
+                var form = db1.GetForm(id).FirstOrDefault();
+                if (form == null) { return Json(false); }
+
+                db1.FormDelete(id);
+            }
+            TempData["smsg"] = "The changes have been made successfully.";
+            return Json(true);
+        }
     }
 }
