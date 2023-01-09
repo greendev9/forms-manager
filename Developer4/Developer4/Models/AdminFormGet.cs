@@ -35,7 +35,7 @@ namespace SharedAssemblies.Models
         [DisplayName("Supplement Page Number")]
         public int? SupplementPageNo { get; set; }
         [DisplayName("Supplement Page Section Count")]
-        public int? SupplementPageSectionCount { get; set; }
+        public int SupplementPageSectionCount { get; set; }
         [DisplayName("Refer to Custom Supplemental Page Message")]
         public string SupplementPageMsg { get; set; }
         [DisplayName("Refer to Supplement Page Message")]

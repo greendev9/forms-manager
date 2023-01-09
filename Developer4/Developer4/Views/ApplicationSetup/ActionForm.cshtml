@@ -24,17 +24,17 @@
                         @Html.HiddenFor(model => model.ID)
                         <div class="form-group">
                             @Html.LabelFor(model => model.FormCode, htmlAttributes: new { @class = "col-form-label" }) <label class="text-danger">*</label>
-                            @Html.EditorFor(model => model.FormCode, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.FormCode) } })
+                            @Html.EditorFor(model => model.FormCode, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.FormCode), @maxlength = "10" } })
                             @Html.ValidationMessageFor(model => model.FormCode, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             @Html.LabelFor(model => model.FormName, htmlAttributes: new { @class = "col-form-label" }) <label class="text-danger">*</label>
-                            @Html.EditorFor(model => model.FormName, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.FormName) } })
+                            @Html.EditorFor(model => model.FormName, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.FormName), @maxlength = "150" } })
                             @Html.ValidationMessageFor(model => model.FormName, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             @Html.LabelFor(model => model.NotApplicableText, htmlAttributes: new { @class = "col-form-label" }) <label class="text-danger">*</label>
-                            @Html.EditorFor(model => model.NotApplicableText, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.NotApplicableText) } })
+                            @Html.EditorFor(model => model.NotApplicableText, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.NotApplicableText), @maxlength = "50" } })
                             @Html.ValidationMessageFor(model => model.NotApplicableText, "", new { @class = "text-danger" })
                         </div>
                         @if (ViewBag.Page == "Update Form")
@@ -52,7 +52,7 @@
                         }
                         <div class="form-group">
                             @Html.LabelFor(model => model.Header, htmlAttributes: new { @class = "col-form-label" })
-                            @Html.EditorFor(model => model.Header, new { htmlAttributes = new { @origVal = Model.Header, @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.Header) } })
+                            @Html.EditorFor(model => model.Header, new { htmlAttributes = new { @origVal = Model.Header, @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.Header), @maxlength = "500" } })
                             @Html.ValidationMessageFor(model => model.Header, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
@@ -74,7 +74,7 @@
                         {
                             <div class="form-group">
                                 @Html.LabelFor(model => model.IdentifierUnlockMsg, htmlAttributes: new { @class = "col-form-label" })
-                                @Html.EditorFor(model => model.IdentifierUnlockMsg, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.IdentifierUnlockMsg) } })
+                                @Html.EditorFor(model => model.IdentifierUnlockMsg, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.IdentifierUnlockMsg), @maxlength = "255" } })
                                 @Html.ValidationMessageFor(model => model.IdentifierUnlockMsg, "", new { @class = "text-danger" })
                             </div>
                         }
@@ -87,7 +87,7 @@
                         {
                             <div class="form-group">
                                 @Html.LabelFor(model => model.SupplementPageMsg, htmlAttributes: new { @class = "col-form-label" })
-                                @Html.EditorFor(model => model.SupplementPageMsg, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.SupplementPageMsg) } })
+                                @Html.EditorFor(model => model.SupplementPageMsg, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.SupplementPageMsg), @maxlength = "255" } })
                                 @Html.ValidationMessageFor(model => model.SupplementPageMsg, "", new { @class = "text-danger" })
                             </div>
                         }
@@ -151,7 +151,7 @@
                         {
                             <div class="form-group">
                                 @Html.LabelFor(model => model.CoverletterBulletItemText, htmlAttributes: new { @class = "col-form-label" })
-                                @Html.EditorFor(model => model.CoverletterBulletItemText, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.CoverletterBulletItemText) } })
+                                @Html.EditorFor(model => model.CoverletterBulletItemText, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.CoverletterBulletItemText), @maxlength = "255" } })
                                 @Html.ValidationMessageFor(model => model.CoverletterBulletItemText, "", new { @class = "text-danger" })
                             </div>
                         }
@@ -175,7 +175,7 @@
                         {
                             <div class="form-group">
                                 @Html.LabelFor(model => model.SupplementPageFieldMsg, htmlAttributes: new { @class = "col-form-label" })
-                                @Html.EditorFor(model => model.SupplementPageFieldMsg, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.SupplementPageFieldMsg) } })
+                                @Html.EditorFor(model => model.SupplementPageFieldMsg, new { htmlAttributes = new { @class = "form-control", @placeholder = Html.DisplayNameFor(model => model.SupplementPageFieldMsg), @maxlength = "30" } })
                                 @Html.ValidationMessageFor(model => model.SupplementPageFieldMsg, "", new { @class = "text-danger" })
                             </div>
                         }
@@ -277,64 +277,56 @@
             }
         }
 
-        $('#Header').summernote({
-            placeholder: '',
-            onPaste: function (e) {
-                var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
-                e.preventDefault();
-                document.execCommand('insertText', false, bufferText);
-            },
-            lineWrapping: false,
-            height: 200,
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'italic', 'clear']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link']],
-                ['view', ['fullscreen', 'codeview']]
-            ]
-        });
+        function registerSummernote(element, placeholder, height, max, callbackMax) {
+            $(element).summernote({
+                height: height,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'italic', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['table', ['table']],
+                    ['insert', ['link']],
+                    ['view', ['fullscreen', 'codeview']]
+                ],
+                placeholder,
+                callbacks: {
+                    onKeydown: function (e) {
+                        var t = e.currentTarget.innerText;
+                        if (t.length >= max) {
+                            //delete key
+                            if (e.keyCode != 8)
+                                e.preventDefault();
+                        }
+                    },
+                    onKeyup: function (e) {
+                        var t = e.currentTarget.innerText;
+                        if (typeof callbackMax == 'function') {
+                            callbackMax(max - t.length);
+                        }
+                    },
+                    onPaste: function (e) {
+                        var t = e.currentTarget.innerText;
+                        var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+                        e.preventDefault();
+                        var all = t + bufferText;
+                        document.execCommand('insertText', false, all.trim().substring(0, max));
+                        if (typeof callbackMax == 'function') {
+                            callbackMax(max - t.length);
+                        }
+                    }
+                }
+            });
+        }
 
-        $('#HiddenFormCompleted').summernote({
-            placeholder: '',
-            onPaste: function (e) {
-                var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
-                e.preventDefault();
-                document.execCommand('insertText', false, bufferText);
-            },
-            lineWrapping: false,
-            height: 200,
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'italic', 'clear']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link']],
-                ['view', ['fullscreen', 'codeview']]
-            ]
+        registerSummernote('#Header', '', 200, 300, function (max) {
+            $('#Header').text(max)
         });
-
-        $('#ApprovalInstructions').summernote({
-            placeholder: '',
-            onPaste: function (e) {
-                var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
-                e.preventDefault();
-                document.execCommand('insertText', false, bufferText);
-            },
-            lineWrapping: false,
-            height: 200,
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'italic', 'clear']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link']],
-                ['view', ['fullscreen', 'codeview']]
-            ]
+        registerSummernote('#HiddenFormCompleted', '', 200, 300, function (max) {
+            $('#HiddenFormCompleted').text(max)
+        });
+        registerSummernote('#ApprovalInstructions', '', 200, 300, function (max) {
+            $('#ApprovalInstructions').text(max)
         });
 
         function updateHtmlAllowedArea(obj, newHtml) {
